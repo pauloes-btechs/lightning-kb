@@ -25,6 +25,12 @@ def main():
     lint_p.add_argument("--uncovered", action="store_true", help="list every uncited raw page")
     lint_p.add_argument("--strict", action="store_true", help="exit 1 if there are problems (CI)")
     sub.add_parser("status", help="counts")
+    ak = sub.add_parser("ask", help="answer a question with checked citations (uses Claude Code)")
+    ak.add_argument("question")
+    ak.add_argument("--json", action="store_true")
+    ak.add_argument("--passages-only", action="store_true", help="skip the written answer")
+    sv = sub.add_parser("serve", help="chat UI at http://127.0.0.1:8787")
+    sv.add_argument("--port", type=int, default=8787)
     sh = sub.add_parser("show", help="print a raw or wiki file without the skipped sections")
     sh.add_argument("path")
     sh.add_argument("--full", action="store_true", help="include code samples and boilerplate")
@@ -78,6 +84,12 @@ def main():
             print("chunks: %d   links: %d   API entities: %d   API relations: %d" % conn.execute(
                 "select (select count(*) from chunks), (select count(*) from edges), "
                 "(select count(*) from entities), (select count(*) from relations)").fetchone())
+    elif a.cmd == "ask":
+        from . import ask
+        ask.run(a.question, a.json, a.passages_only)
+    elif a.cmd == "serve":
+        from . import serve
+        serve.run(a.port)
     elif a.cmd == "show":
         from .index import strip_sections
         target = (common.ROOT / a.path).resolve()

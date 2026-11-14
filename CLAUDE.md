@@ -71,18 +71,22 @@ Asked to "ingest <product or folder>":
 4. Run `./kb index` then `./kb lint`, and fix what lint reports.
 
 ### query
-Asked a question about Lightning Labs tech:
-1. Run `./kb search "<question>" --json` (add `--product lnd` etc. when the
-   scope is clear; try a second phrasing if results look weak).
-2. Answer only from the returned chunks and the files they point to. Open
-   the file when a chunk is cut off. Cite the `url` (or wiki path) for each
-   claim.
-3. If nothing returned supports an answer, say so plainly and say what you
-   searched for. Do not fill the gap from general knowledge.
-4. If the answer was worth keeping, file it as `wiki/questions/<slug>.md`
-   and link it from the pages it draws on.
-5. If the right page existed but search did not surface it in the top 5,
-   add the question to `evals/golden.yaml` with that page as `expect`.
+Asked a question about Lightning Labs tech, follow the `ask` skill
+(`.claude/skills/ask/SKILL.md`): split the question, search each part,
+use `./kb graph` for API structure, answer only from returned passages
+with a quoted citation per claim, and list what the sources did not cover.
+The same flow runs behind `./kb ask "<question>"` and the chat UI
+(`./kb serve`), where a program checks every quote against its passage.
+
+Afterwards:
+- If the answer was worth keeping, file it as `wiki/questions/<slug>.md`
+  and link it from the pages it draws on.
+- If the right page existed but search did not surface it in the top 5,
+  add the question to `evals/golden.yaml` with that page as `expect`.
+
+### example
+For "show me how to call X" or "give me a tested example", follow the
+`example` skill. Commands run only inside the wallet's regtest harness.
 
 ### lint
 Run `./kb lint`. Fix broken links, orphans, pages without sources. Then

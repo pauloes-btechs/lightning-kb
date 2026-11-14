@@ -1,5 +1,9 @@
 {
-  "attribution": { "commit": "", "pr": "", "sessionUrl": false },
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
   "permissions": {
     "allow": [
       "Bash(./kb *)",
@@ -23,7 +27,18 @@
       "Bash(git push -f*)",
       "Bash(git reset --hard*)",
       "Edit(raw/**)",
-      "Write(raw/**)"
+      "Write(raw/**)",
+      "Bash(lncli *)",
+      "Bash(litcli *)",
+      "Bash(tapcli *)",
+      "Bash(loop *)",
+      "Bash(pool *)",
+      "Bash(frcli *)"
+    ],
+    "ask": [
+      "Bash(docker compose * up *)",
+      "Bash(docker compose * exec *)",
+      "Bash(gh issue create *)"
     ]
   }
 }

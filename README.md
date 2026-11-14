@@ -43,6 +43,30 @@ and CI is green. Merges are fast-forward, and `.claude/settings.json` turns
 off Claude Code's commit and PR attribution, so every commit is authored by
 the repo's configured git user alone.
 
+## Asking questions
+
+    ./kb serve                      # chat UI at http://127.0.0.1:8787
+    ./kb ask "Which RPC starts a Loop Out?"
+    ./kb graph LoopOut              # exact API structure: service, messages, users
+
+Answers are written by Claude Code running headless on this machine
+(`claude -p`), which splits the question, searches each part and reads the
+sources. A program then checks every citation: the quoted words must appear
+in the cited passage, and failures are flagged in red. Without the `claude`
+command the UI still works in passages-only mode. In Claude Code, `/ask` and
+`/example` run the same flow interactively; `/example` runs commands only
+inside the wallet's regtest harness.
+
+## Keeping it current
+
+    ./kb refresh                    # crawl, re-index, list changes and stale wiki pages
+    ./kb changes --since 2026-11-01
+    ./kb stale
+    ./kb schedule install           # weekly background crawl (macOS)
+
+Changed pages keep their previous version under `history/`, and each API
+page records the repository commit it was generated from.
+
 ## Moving the index to Supabase or Neon
 
     ./kb push "postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
