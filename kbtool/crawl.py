@@ -12,6 +12,7 @@ import yaml
 from bs4 import BeautifulSoup
 from markdownify import markdownify
 
+from . import living
 from .common import ROOT, sha, split_frontmatter
 
 UA = "lightning-kb/1.0 (personal docs mirror for local search)"
@@ -53,16 +54,27 @@ def _dest(source, url):
 def _save(source, url, title, body):
     body = body.strip() + "\n"
     dest = _dest(source, url)
+    rel = dest.relative_to(ROOT).as_posix()
     digest = sha(body)
+    status, old_sha = "new", None
     if dest.exists():
-        meta, _ = split_frontmatter(dest.read_text())
-        if meta.get("sha256") == digest:
-            return "same"
+        old_text = dest.read_text()
+        meta, _ = split_frontmatter(old_text)
+        old_sha = meta.get("sha256")
+        if old_sha == digest:
+            return "same", rel
+        # Keep the superseded version so an old spec stays distinguishable.
+        stamp = str(meta.get("fetched") or "unknown")
+        keep = ROOT / "history" / (rel[:-3] + "." + stamp + ".md")
+        keep.parent.mkdir(parents=True, exist_ok=True)
+        keep.write_text(old_text)
+        status = "changed"
     meta = {"title": title, "source": source, "source_url": url, "sha256": digest,
             "fetched": datetime.date.today().isoformat()}
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text("---\n" + yaml.safe_dump(meta, sort_keys=False) + "---\n" + body)
-    return "new"
+    living.record(status, source, rel, url, old_sha, digest)
+    return ("new" if status in ("new", "changed") else status), rel
 
 
 def _title_from_md(body, fallback):
@@ -117,7 +129,7 @@ def run(only=None, limit=None, delay=0.25):
                 continue
             pages = (_crawl_llms if src["type"] == "llms_txt" else _crawl_sitemap)(client, src, limit)
             stats = {"new": 0, "same": 0, "failed": 0}
-            failed = []
+            failed, kept = [], set()
             for i, (title, url, kind) in enumerate(pages, 1):
                 text = _get(client, url)
                 if not text or not text.strip():
@@ -129,7 +141,9 @@ def run(only=None, limit=None, delay=0.25):
                 else:
                     body = text
                     title = _title_from_md(body, title)
-                stats[_save(src["name"], url, title or url, body)] += 1
+                status, rel = _save(src["name"], url, title or url, body)
+                stats[status] += 1
+                kept.add(rel)
                 if i % 25 == 0:
                     print("  %s: %d/%d" % (src["name"], i, len(pages)))
                 time.sleep(delay)
@@ -137,3 +151,14 @@ def run(only=None, limit=None, delay=0.25):
                   % (src["name"], len(pages), stats["new"], stats["same"], stats["failed"]))
             for u in failed[:10]:
                 print("   failed: " + u)
+            # Pages the site no longer lists. Only judged on a complete, clean crawl.
+            base = ROOT / "raw" / src["name"]
+            if limit >= 10 ** 9 and not failed and base.exists():
+                gone = [f.relative_to(ROOT).as_posix() for f in base.rglob("*.md")
+                        if f.relative_to(ROOT).as_posix() not in kept]
+                already = set(c["path"] for c in living.read_changes(kinds=("removed",)))
+                for rel in gone:
+                    if rel not in already:
+                        living.record("removed", src["name"], rel, "")
+                if gone:
+                    print("   %d page(s) no longer on the site (kept locally; see ./kb changes)" % len(gone))

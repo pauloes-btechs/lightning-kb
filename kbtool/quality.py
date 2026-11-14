@@ -71,6 +71,13 @@ def lint():
         pages[f.relative_to(ROOT).as_posix()] = split_frontmatter(f.read_text(errors="replace"))
     stems = {posixpath.basename(p)[:-3].lower(): p for p in pages}
     special = {"wiki/index.md", "wiki/log.md"}
+    # Pages listed in wiki-plan.yaml may be linked before they are written.
+    planned = set()
+    plan_file = ROOT / "wiki-plan.yaml"
+    if plan_file.exists():
+        for item in (yaml.safe_load(plan_file.read_text()) or {}).get("pages") or []:
+            planned.add(str(item.get("slug", "")).lower())
+    pending = planned - set(stems)
     inbound, problems, cited = set(), [], set()
     has_raw = (ROOT / "raw").exists()   # raw/ is not in git, so CI cannot check it
     for path, (meta, body) in pages.items():
@@ -78,7 +85,7 @@ def lint():
             hit = stems.get(posixpath.basename(target.strip()).lower())
             if hit:
                 inbound.add(hit)
-            else:
+            elif posixpath.basename(target.strip()).lower() not in planned:
                 problems.append("broken link  %s -> [[%s]]" % (path, target))
         if path in special:
             continue
@@ -100,6 +107,8 @@ def lint():
         print(p)
     print("\n%d wiki pages, %d problems. Raw coverage: %d of %d source pages cited by the wiki."
           % (len(pages) - len(special & set(pages)), len(problems), len(raw) - len(uncovered), len(raw)))
+    if pending:
+        print("Planned in wiki-plan.yaml but not written yet: %d" % len(pending))
     if uncovered:
         print("Next uncited sources (./kb lint --uncovered for all):")
     return uncovered, len(problems)

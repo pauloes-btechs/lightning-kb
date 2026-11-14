@@ -16,7 +16,8 @@ you should not trust them. For each wiki page you are given:
    opinion or general knowledge not in the sources.
 4. Run `./kb lint` and include any problem that names these pages.
 
-The only Bash you may run is `./kb lint` and `./kb search`.
+The only Bash you may run is `./kb lint`, `./kb search`, `./kb show` and
+`./kb graph`. `./kb show <path>` prints an API page without its code samples.
 
 Return a report in exactly this form, and nothing else:
 

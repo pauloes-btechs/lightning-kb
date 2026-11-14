@@ -67,7 +67,7 @@ def search(conn, q, mode="graph", k=8, product=None, layer=None):
         return []
 
     meta = {r[0]: r[1:] for r in conn.execute(
-        "select c.id, c.doc_id, c.heading, c.content, d.path, d.layer, d.product, d.title, d.url "
+        "select c.id, c.doc_id, c.heading, c.content, d.path, d.layer, d.product, d.title, d.url, d.version "
         "from chunks c join documents d on d.id = c.doc_id where c.id = any(%s)",
         (list(scores),)).fetchall()}
 
@@ -104,7 +104,7 @@ def search(conn, q, mode="graph", k=8, product=None, layer=None):
     # other pages that contain the same text.
     out, by_text = [], {}
     for cid, s in sorted(scores.items(), key=lambda kv: -kv[1]):
-        doc_id, heading, content, path, lyr, prod, title, url = meta[cid]
+        doc_id, heading, content, path, lyr, prod, title, url, version = meta[cid]
         if product and prod != product:
             continue
         if layer and lyr != layer:
@@ -116,8 +116,8 @@ def search(conn, q, mode="graph", k=8, product=None, layer=None):
             continue
         if len(out) >= k:
             continue
-        hit = {"score": round(s, 5), "similarity": round(sim[cid], 3) if cid in sim else None,
-               "layer": lyr, "product": prod, "title": title, "heading": heading,
+        hit = {"id": cid, "score": round(s, 5), "similarity": round(sim[cid], 3) if cid in sim else None,
+               "layer": lyr, "product": prod, "title": title, "heading": heading, "version": version,
                "path": path, "url": url, "content": content, "also_in": []}
         by_text[content] = hit
         out.append(hit)
@@ -135,9 +135,8 @@ def run(q, mode, k, product, layer, as_json):
         return
     for i, h in enumerate(hits, 1):
         simtxt = "" if h["similarity"] is None else "  sim %.2f" % h["similarity"]
-        print("\n%d. [%s] %s%s%s" % (i, h["layer"], h["title"],
-                                     " > " + h["heading"] if h["heading"] else "", simtxt))
-        print("   " + (h["url"] or h["path"]))
+        print("\n%d. [%s] %s%s  #%d" % (i, h["layer"], h["heading"] or h["title"], simtxt, h["id"]))
+        print("   " + (h["url"] or h["path"]) + ("  (%s)" % h["version"] if h["version"] else ""))
         if h["also_in"]:
             print("   same text on %d other page(s)" % len(h["also_in"]))
         snippet = " ".join(h["content"].split())

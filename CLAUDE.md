@@ -91,6 +91,15 @@ and stale claims. Report raw coverage (how many source pages the wiki
 cites) and propose what to ingest next.
 
 ### refresh
-`./kb crawl` then `./kb index`. For every raw file that changed (git diff
-if raw/ is tracked, otherwise the crawl output), re-check the wiki pages
-whose `sources:` list it and update them.
+`./kb refresh` crawls, re-indexes, and prints what changed upstream and
+which wiki pages are now stale. `./kb changes` and `./kb stale` show the
+same lists later. Superseded versions of changed pages are kept under
+`history/`; never cite a file there as current. Re-check each stale page
+against its changed sources and set its `updated:` date.
+
+### API structure
+`./kb graph <name>` answers structural questions exactly: which service and
+product an RPC belongs to, its request and response messages, and which RPCs
+use a given message. Prefer it to search for "which/what uses" questions
+about the API. API pages carry a version stamp (repository@commit) taken
+from the page; quote it when the version matters.

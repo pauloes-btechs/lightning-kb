@@ -17,9 +17,20 @@ and handle git. Work through scopes in order, one branch per scope.
 3. `./kb status` must show raw pages. If `raw/` is empty, run `./kb crawl`
    then `./kb index`.
 
+## Plan first
+
+If `wiki-plan.yaml` does not exist, write it before any page: every page you
+intend to create, as `pages: [{slug, title, type, scope}]`. Slugs are the
+future file names. Lint accepts links to planned slugs, so products can be
+built and merged one at a time and still link to each other. Commit the plan
+on its own branch and merge it. Remove nothing from it as pages land; lint
+reports how many planned pages are still unwritten.
+
 ## Scope order
 
-If the user named a scope, do only that. Otherwise take the first of these
+If the scope is `refresh`, run `./kb stale` and send each listed page back
+through the writer and checker against its changed sources, one branch for
+the batch. If the user named any other scope, do only that. Otherwise take the first of these
 that `./kb lint --uncovered` shows still has uncited raw files:
 
     loop, pool, faraday, lit, taproot-assets, lnd, aperture, wavelength,

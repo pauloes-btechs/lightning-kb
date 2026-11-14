@@ -10,3 +10,6 @@ __pycache__/
 # the repo is private or you have checked the docs' licence.
 raw/
 .claude/settings.local.json
+history/
+changes.jsonl
+logs/

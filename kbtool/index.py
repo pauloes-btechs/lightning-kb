@@ -27,8 +27,58 @@ SKIP = {"wiki/log.md", "wiki/index.md"}
 SKIP_HEADINGS = tuple(h.strip().lower() for h in os.environ.get(
     "KB_SKIP_SECTIONS", "agent instructions,code samples").split(",") if h.strip())
 TAG_RE = re.compile(r"<[^>]+>")
-# Bump when chunking rules change, so every file is re-chunked on the next index.
-CHUNK_VERSION = "3|" + ",".join(SKIP_HEADINGS)
+# Bump when chunking or embedding-input rules change: every file is redone.
+CHUNK_VERSION = "4|" + ",".join(SKIP_HEADINGS)
+API_RE = re.compile(r"^raw/api/api-docs/api/([^/]+)/([^/]+)/([^/]+)\.md$")
+COMMIT_RE = re.compile(r"github\.com/[\w.-]+/([\w.-]+)/blob/([0-9a-f]{7,40})/")
+MESSAGE_SECTIONS = ("Messages", "Nested Messages")
+
+
+def api_info(rel):
+    """(product, service, method-slug) for an API method page, else None."""
+    m = API_RE.match(rel)
+    return m.groups() if m else None
+
+
+def contextualize(rel, title, heading):
+    """Return (stored_heading, embed_prefix) for one chunk.
+
+    An API page's own title is just the RPC name ("GetInfo"), which five
+    products share. The stored heading and the embedded text therefore carry
+    the product and service. Message tables are the exception: the same table
+    appears on every page whose RPC uses it, so its prefix names only the
+    product and the message. Identical tables then share one embedding.
+    """
+    parts = [h for h in heading.split(" > ") if h] if heading else []
+    if parts and parts[0] == title:
+        parts = parts[1:]
+    info = api_info(rel)
+    if not info:
+        stored = " > ".join([title] + parts)
+        return stored, stored
+    product, service, _ = info
+    crumb = "%s / %s / %s" % (product, service, title)
+    stored = " > ".join([crumb] + parts)
+    if len(parts) >= 2 and parts[0] in MESSAGE_SECTIONS:
+        return stored, "%s message %s" % (product, parts[-1])
+    return stored, stored
+
+
+def strip_sections(body):
+    """The body without the sections the index skips (used by ./kb show)."""
+    out, path, fence, skipping = [], [], False, False
+    for line in body.splitlines():
+        if line.lstrip().startswith("```"):
+            fence = not fence
+        m = None if fence else HEAD_RE.match(line)
+        if m:
+            level = len(m.group(1))
+            del path[level - 1:]
+            path.append(TAG_RE.sub("", m.group(2)).strip())
+            skipping = any(k in h.lower() for h in path for k in SKIP_HEADINGS)
+        if not skipping:
+            out.append(line)
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(out)).strip() + "\n"
 
 
 def chunk(body):
@@ -120,40 +170,47 @@ def run(url=None):
             title = str(meta.get("title") or f.stem)
             parts = rel.split("/")
             source = parts[1] if layer == "raw" and len(parts) > 2 else layer
-            chunks = chunk(body)
+            chunks = []
+            for h, c in chunk(body):
+                stored, prefix = contextualize(rel, title, h)
+                key = hashlib.md5((prefix + "\n" + c).encode("utf-8")).hexdigest()
+                chunks.append((stored, prefix, c, key))
+            ver = COMMIT_RE.search(body) if layer == "raw" else None
+            version = "%s@%s" % (ver.group(1), ver.group(2)[:7]) if ver else None
             # One transaction per file: if the run is interrupted, a half-embedded
             # file is rolled back and redone next time. Safe to Ctrl-C and resume.
             with conn.transaction():
                 doc_id = conn.execute(
-                    """insert into documents(path, layer, source, product, title, url, sha256)
-                       values (%s,%s,%s,%s,%s,%s,%s)
+                    """insert into documents(path, layer, source, product, title, url, sha256, version)
+                       values (%s,%s,%s,%s,%s,%s,%s,%s)
                        on conflict (path) do update set layer=excluded.layer, source=excluded.source,
                          product=excluded.product, title=excluded.title, url=excluded.url,
-                         sha256=excluded.sha256, updated_at=now()
+                         sha256=excluded.sha256, version=excluded.version, updated_at=now()
                        returning id""",
-                    (rel, layer, source, _product(rel), title, meta.get("source_url"), digest),
+                    (rel, layer, source, _product(rel), title, meta.get("source_url"), digest, version),
                 ).fetchone()[0]
                 conn.execute("delete from chunks where doc_id=%s", (doc_id,))
-                # Identical chunks (shared message tables repeat across API pages)
-                # are embedded once: reuse the stored vector when the text matches.
-                keys = [hashlib.md5(c.encode("utf-8")).hexdigest() for _, c in chunks]
+                # Text that was already embedded (same prefix, same content) reuses
+                # its stored vector instead of going back to the model.
+                keys = [k for _, _, _, k in chunks]
                 vec_by_key = dict(conn.execute(
-                    "select distinct on (md5(content)) md5(content), embedding::text from chunks "
-                    "where md5(content) = any(%s) and embedding is not null", (keys,)).fetchall())
-                need = []
-                for k, hc in zip(keys, chunks):
-                    if k not in vec_by_key and k not in [x[0] for x in need]:
-                        need.append((k, hc))
+                    "select distinct on (ekey) ekey, embedding::text from chunks "
+                    "where ekey = any(%s) and embedding is not null", (keys,)).fetchall())
+                need, queued = [], set()
+                for stored, prefix, c, k in chunks:
+                    if k not in vec_by_key and k not in queued:
+                        queued.add(k)
+                        need.append((k, prefix, c))
                 for i in range(0, len(need), 16):
                     batch = need[i:i + 16]
-                    vecs = embed([(title + " > " + h + "\n" + c)[:6000] for _, (h, c) in batch])
-                    for (k, _), v in zip(batch, vecs):
+                    vecs = embed([(prefix + "\n" + c)[:6000] for _, prefix, c in batch])
+                    for (k, _, _), v in zip(batch, vecs):
                         vec_by_key[k] = vec_literal(v)
                 n_reused += len(chunks) - len(need)
-                for j, (k, (h, c)) in enumerate(zip(keys, chunks)):
+                for j, (stored, prefix, c, k) in enumerate(chunks):
                     conn.execute(
-                        "insert into chunks(doc_id, ord, heading, content, embedding) "
-                        "values (%s,%s,%s,%s,%s::vector)", (doc_id, j, h, c, vec_by_key[k]))
+                        "insert into chunks(doc_id, ord, heading, content, embedding, ekey) "
+                        "values (%s,%s,%s,%s,%s::vector,%s)", (doc_id, j, stored, c, vec_by_key[k], k))
             n_chunks += len(chunks)
             if n % 25 == 0 or n == len(todo):
                 elapsed = time.time() - start
@@ -205,8 +262,12 @@ def run(url=None):
         with conn.cursor() as cur:
             cur.executemany("insert into edges(src, dst, kind) values (%s,%s,%s)", sorted(edges))
 
+        from .graph import build as build_api_graph
+        n_ent, n_rel = build_api_graph(conn, texts)
+
         d, c, e = conn.execute(
             "select (select count(*) from documents), (select count(*) from chunks), "
             "(select count(*) from edges)").fetchone()
-    print("indexed: %d files re-embedded, %d removed. Now %d documents, %d chunks, %d links."
-          % (n_embedded, len(gone), d, c, e))
+    print("indexed: %d files re-embedded, %d removed. Now %d documents, %d chunks, %d links, "
+          "%d API entities, %d API relations."
+          % (n_embedded, len(gone), d, c, e, n_ent, n_rel))

@@ -25,6 +25,20 @@ def main():
     lint_p.add_argument("--uncovered", action="store_true", help="list every uncited raw page")
     lint_p.add_argument("--strict", action="store_true", help="exit 1 if there are problems (CI)")
     sub.add_parser("status", help="counts")
+    sh = sub.add_parser("show", help="print a raw or wiki file without the skipped sections")
+    sh.add_argument("path")
+    sh.add_argument("--full", action="store_true", help="include code samples and boilerplate")
+    g = sub.add_parser("graph", help="API graph: what a product, service, RPC or message connects to")
+    g.add_argument("name")
+    g.add_argument("--product")
+    g.add_argument("--json", action="store_true")
+    ch = sub.add_parser("changes", help="what changed upstream (from the crawl log)")
+    ch.add_argument("--since", help="YYYY-MM-DD")
+    ch.add_argument("--all", action="store_true", help="include first-time downloads")
+    sub.add_parser("stale", help="wiki pages whose cited sources changed since they were written")
+    sub.add_parser("refresh", help="crawl + index, then report changes and stale wiki pages")
+    sc = sub.add_parser("schedule", help="weekly background crawl (macOS)")
+    sc.add_argument("action", choices=["install", "remove", "status"])
     rs = sub.add_parser("reset", help="drop all tables (needed after changing the embedding model)")
     rs.add_argument("database_url", nargs="?", help="default: DATABASE_URL from .env")
     push = sub.add_parser("push", help="build the same index on Supabase/Neon")
@@ -61,11 +75,39 @@ def main():
             for layer, source, n in conn.execute(
                     "select layer, source, count(*) from documents group by 1,2 order by 1,2").fetchall():
                 print("%-5s %-11s %5d pages" % (layer, source, n))
-            print("chunks: %d   links: %d" % conn.execute(
-                "select (select count(*) from chunks), (select count(*) from edges)").fetchone())
+            print("chunks: %d   links: %d   API entities: %d   API relations: %d" % conn.execute(
+                "select (select count(*) from chunks), (select count(*) from edges), "
+                "(select count(*) from entities), (select count(*) from relations)").fetchone())
+    elif a.cmd == "show":
+        from .index import strip_sections
+        target = (common.ROOT / a.path).resolve()
+        if common.ROOT.resolve() not in target.parents or not target.is_file():
+            sys.exit("Not a file inside the knowledge base: " + a.path)
+        text = target.read_text(errors="replace")
+        if a.full:
+            print(text)
+        else:
+            meta_end = common.FM_RE.match(text)
+            head = text[:meta_end.end()] if meta_end else ""
+            print(head + strip_sections(text[len(head):]))
+    elif a.cmd == "graph":
+        from . import graph
+        graph.run(a.name, a.product, a.json)
+    elif a.cmd == "changes":
+        from . import living
+        living.changes(a.since, a.all)
+    elif a.cmd == "stale":
+        from . import living
+        living.stale()
+    elif a.cmd == "refresh":
+        from . import living
+        living.refresh()
+    elif a.cmd == "schedule":
+        from . import living
+        living.schedule(a.action)
     elif a.cmd == "reset":
         with common.db(a.database_url) as conn:
-            conn.execute("drop table if exists eval_runs, edges, chunks, documents cascade")
+            conn.execute("drop table if exists eval_runs, relations, entities, edges, chunks, documents cascade")
         print("dropped. Run ./kb index to rebuild.")
     elif a.cmd == "push":
         from . import index
