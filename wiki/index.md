@@ -8,6 +8,7 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[faraday]]: What Faraday is, its lnd and bitcoind requirements, bundling in litd, frcli and API ports.
 - [[lightning-terminal]]: What Lightning Terminal (litd) is, the LNC privacy model, bundled products, port 8443 and litcli.
 - [[loop]]: What Loop is, Loop In versus Loop Out, its relation to lnd and litd, install, CLI and API ports.
+- [[pool]]: What Pool is, its requirements, how it relates to lnd, litd and Loop, the CLI and API ports.
 
 ## Services
 - [[faraday-server]]: All nine Faraday RPCs: purpose, gRPC signature, REST path, messages and key fields.
@@ -19,6 +20,9 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[lit-status]]: The SubServerStatus RPC and its fields.
 - [[loop-debug]]: The debug service's single RPC, ForceAutoLoop (testing only, not mainnet).
 - [[loop-swap-client]]: All 33 swap-client RPCs: purpose, gRPC signature, REST path, messages and key fields.
+- [[pool-channel-auctioneer]]: The 14 channel-auctioneer RPCs: accounts, orders, batch streams, terms and snapshots.
+- [[pool-hash-mail]]: The four hash-mail cipher box stream RPCs.
+- [[pool-trader]]: The 30 trader RPCs of poold: accounts, orders, batches, leases and sidecar tickets.
 
 ## Concepts
 
@@ -32,8 +36,14 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[litd-integration]]: Moving services into and out of integrated mode, and CLI arguments per bundled tool.
 - [[litd-troubleshooting]]: Connection fixes, Pool database and account recovery, and running the stack on signet.
 - [[machine-payments-protocol]]: MPP compared with L402 and the aperture.yaml keys that enable it.
+- [[pool-accounts]]: The account contract, creating, funding, withdrawing and closing accounts, and recovery.
+- [[pool-channel-leases]]: Inspecting leases and how lease lifetime is enforced.
+- [[pool-orders-and-batches]]: Asks and bids, order flags, fee formulas, lease durations, batch execution and snapshots.
+- [[pool-setup]]: Installing the binaries, preparing lnd, running poold, remote lnd configuration and first commands.
+- [[pool-zero-conf-channels]]: The zero-conf trust model, lnd.conf settings, and buying and selling zero-conf channels.
 - [[running-aperture]]: Building Aperture, configuring aperture.yaml, obtaining a TLS certificate, starting and verifying.
 - [[running-litd]]: Installing litd, integrated and remote configuration, reaching the UI, and connecting to Terminal.
+- [[sidecar-channels]]: The sidecar ticket flow: offer, register, bid and expect-channel.
 - [[static-loop-in-addresses]]: Static address design, deposit and swap flow, the `loop static` commands and related RPCs.
 - [[terminal-liquidity-tools]]: Channels, health checks, rankings, the liquidity report, Autofees, AutoOpen, and Loop and Pool in the UI.
 - [[terminal-privacy-and-security]]: The security model, what the proxy can see, and the privacy policy and terms of use.

@@ -26,3 +26,10 @@ Append-only. One line per operation: date, operation, what changed.
 - 2026-11-14 conflict (lit): Umbrel `pool.db` path and container name differ within troubleshooting.md; recorded on [[litd-troubleshooting]].
 - 2026-11-14 conflict (lit): inbound ranking percentile bands overlap in ranking.md; recorded on [[terminal-liquidity-tools]].
 - 2026-11-14 conflict (lit): access restriction 'not implemented' versus read-only and admin session types; usage statistics versus wider collection in the policy; support@ versus hello@ contact; recorded on [[terminal-privacy-and-security]].
+- 2026-11-14 ingest pool: 10 pages (component, 3 services, 6 how-tos) from 63 raw files; services checker PASS after 3 rounds, guide pages after 3.
+- 2026-11-14 conflict (pool): batch frequency, public versus sealed bids, and seller eligibility are each stated differently across pool.md, batch_execution.md and faq.md; recorded on [[pool]].
+- 2026-11-14 conflict (pool): faq.md says you cannot buy a channel for someone else, while sidecar_channels.md documents exactly that; recorded on [[pool]] and [[sidecar-channels]].
+- 2026-11-14 conflict (pool): account opens after two confirmations versus 3 blocks; `accounts new` amount positional versus `--amt`; withdraw key flag `acct_key` versus `--trader_key`; renewals; recorded on [[pool-setup]] and [[pool-accounts]].
+- 2026-11-14 conflict (pool): counterparty choice, script enforcement, fixed 2016-block lease versus several duration markets, clearing price, and `pool order submit` examples disagree across faq.md, orders.md, overview.md and batch_execution.md; recorded on [[pool-orders-and-batches]].
+- 2026-11-14 conflict (pool): `accounts leases` versus `pool auction leases`, and a 2016-block minimum versus a 144-block example; recorded on [[pool-channel-leases]].
+- 2026-11-14 conflict (pool): sidecar offer `--capacity` versus `--amt`, `sidecar_ticket` versus `ticket`, and Carol versus Charlie; recorded on [[sidecar-channels]].
