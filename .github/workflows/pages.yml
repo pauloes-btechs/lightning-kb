@@ -1,0 +1,51 @@
+# Publishes wiki/ (not raw/) as a browsable site with graph view and
+# full-text search, built with Quartz. Manual trigger only: nothing is
+# published until you run it from the Actions tab.
+#
+# Before the first run: repo Settings -> Pages -> Source: "GitHub Actions".
+# On GitHub Free, Pages needs a public repo and the site itself is public.
+name: Publish wiki to GitHub Pages
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: kb
+      - uses: actions/checkout@v4
+        with:
+          repository: jackyzha0/quartz
+          ref: v4
+          path: quartz
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build
+        working-directory: quartz
+        run: |
+          npm ci
+          npx quartz build -d ../kb/wiki
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: quartz/public
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

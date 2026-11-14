@@ -1,0 +1,24 @@
+# The checker that runs on GitHub: every pull request must pass this before
+# /build-wiki merges it. raw/ is not in git, so this checks wiki structure
+# (broken links, orphans, pages without sources), not claims against sources.
+name: Checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q -r requirements.txt
+      - run: python -m compileall -q kbtool
+      - run: bash -n setup.sh && bash -n kb
+      - run: python -m kbtool.cli lint --strict
