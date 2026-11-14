@@ -17,3 +17,12 @@ Append-only. One line per operation: date, operation, what changed.
 - 2026-11-14 conflict (aperture): connection phrase is eight words in lnc-backend.md and 10 words in mailbox.md; recorded on [[aperture-mailbox-and-lnc]].
 - 2026-11-14 conflict (aperture): mailbox.md spells its placeholder domain three ways and its autocert cache directory two ways; recorded on [[aperture-mailbox-and-lnc]].
 - 2026-11-14 conflict (aperture): `tlspath` and `macdir` home paths differ between get-aperture.md and step-by-step.md; recorded on [[running-aperture]].
+- 2026-11-14 ingest lightning-terminal: 14 pages (component, 6 services, 7 how-tos) from 49 raw files; services checker PASS after 3 rounds, how-tos after 2.
+- 2026-11-14 conflict (lit): credit/debit CLI path is `litcli update credit` on the UpdateAccount page and `litcli accounts update credit` on the CreditAccount page; recorded on [[lit-accounts]].
+- 2026-11-14 conflict (lit): running litd: Taproot Assets bundled now versus in the future; autopilot on signet; http versus https for the UI; `lit.conf` versus `litd.conf`; recorded on [[running-litd]] and [[litd-troubleshooting]].
+- 2026-11-14 conflict (lit): pairing phrase is single-use in lightning-node-connect.md and reusable in privacy-and-security.md; recorded on [[lightning-node-connect]] and [[terminal-privacy-and-security]].
+- 2026-11-14 conflict (lit): accounts.md disagrees with itself on who enforces balances, the macaroon file name, and the permission list; recorded on [[litd-accounts-guide]].
+- 2026-11-14 conflict (lit): integrated-mode log path, the meaning of remote mode, ports (8443 versus 8443 and 10009), `--tlscertpath` versus `--lndtlscertpath`, and whether the bundle includes Taproot Assets; recorded on [[litd-integration]].
+- 2026-11-14 conflict (lit): Umbrel `pool.db` path and container name differ within troubleshooting.md; recorded on [[litd-troubleshooting]].
+- 2026-11-14 conflict (lit): inbound ranking percentile bands overlap in ranking.md; recorded on [[terminal-liquidity-tools]].
+- 2026-11-14 conflict (lit): access restriction 'not implemented' versus read-only and admin session types; usage statistics versus wider collection in the policy; support@ versus hello@ contact; recorded on [[terminal-privacy-and-security]].
