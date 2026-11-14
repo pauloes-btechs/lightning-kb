@@ -12,7 +12,7 @@ from .search import MODES, search
 
 def _first_hit(hits, expect):
     for rank, h in enumerate(hits, 1):
-        hay = ((h["url"] or "") + " " + h["path"]).lower()
+        hay = ((h["url"] or "") + " " + h["path"] + " " + " ".join(h.get("also_in") or [])).lower()
         if any(e.lower() in hay for e in expect):
             return rank
     return None

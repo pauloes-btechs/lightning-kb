@@ -61,18 +61,27 @@ def search(conn, q, mode="graph", k=8, product=None, layer=None):
             if doc in neigh:
                 scores[cid] += 0.5 * max(doc_score[n] for n in neigh[doc])
 
-    out = []
+    # Collapse identical chunks: show the best-ranked copy once and list the
+    # other pages that contain the same text.
+    out, by_text = [], {}
     for cid, s in sorted(scores.items(), key=lambda kv: -kv[1]):
         doc_id, heading, content, path, lyr, prod, title, url = meta[cid]
         if product and prod != product:
             continue
         if layer and lyr != layer:
             continue
-        out.append({"score": round(s, 5), "similarity": round(sim[cid], 3) if cid in sim else None,
-                    "layer": lyr, "product": prod, "title": title, "heading": heading,
-                    "path": path, "url": url, "content": content})
+        if content in by_text:
+            dup = by_text[content]
+            if path != dup["path"] and path not in dup["also_in"]:
+                dup["also_in"].append(path)
+            continue
         if len(out) >= k:
-            break
+            continue
+        hit = {"score": round(s, 5), "similarity": round(sim[cid], 3) if cid in sim else None,
+               "layer": lyr, "product": prod, "title": title, "heading": heading,
+               "path": path, "url": url, "content": content, "also_in": []}
+        by_text[content] = hit
+        out.append(hit)
     return out
 
 
@@ -90,5 +99,7 @@ def run(q, mode, k, product, layer, as_json):
         print("\n%d. [%s] %s%s%s" % (i, h["layer"], h["title"],
                                      " > " + h["heading"] if h["heading"] else "", simtxt))
         print("   " + (h["url"] or h["path"]))
+        if h["also_in"]:
+            print("   same text on %d other page(s)" % len(h["also_in"]))
         snippet = " ".join(h["content"].split())
         print("   " + snippet[:300] + ("..." if len(snippet) > 300 else ""))

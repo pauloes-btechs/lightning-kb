@@ -28,6 +28,8 @@ create table if not exists chunks (
 );
 create index if not exists chunks_doc_idx on chunks(doc_id);
 create index if not exists chunks_tsv_idx on chunks using gin(tsv);
+-- Lets the indexer find an identical chunk that was already embedded.
+create index if not exists chunks_md5_idx on chunks (md5(content));
 {{VEC_INDEX}}
 
 -- The link graph: wikilinks, markdown links and wiki -> raw citations.

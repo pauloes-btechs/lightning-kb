@@ -2,6 +2,7 @@
 
 Incremental: only files whose content hash changed are re-embedded.
 """
+import hashlib
 import os
 import posixpath
 import re
@@ -114,7 +115,7 @@ def run(url=None):
                 todo.append((layer, rel, f, meta, body, digest))
         if todo:
             print("%d files to embed (%d already up to date)" % (len(todo), len(seen) - len(todo)))
-        start, n_chunks = time.time(), 0
+        start, n_chunks, n_reused = time.time(), 0, 0
         for n, (layer, rel, f, meta, body, digest) in enumerate(todo, 1):
             title = str(meta.get("title") or f.stem)
             parts = rel.split("/")
@@ -133,20 +134,32 @@ def run(url=None):
                     (rel, layer, source, _product(rel), title, meta.get("source_url"), digest),
                 ).fetchone()[0]
                 conn.execute("delete from chunks where doc_id=%s", (doc_id,))
-                for i in range(0, len(chunks), 16):
-                    batch = chunks[i:i + 16]
-                    vecs = embed([(title + " > " + h + "\n" + c)[:6000] for h, c in batch])
-                    for j, ((h, c), v) in enumerate(zip(batch, vecs)):
-                        conn.execute(
-                            "insert into chunks(doc_id, ord, heading, content, embedding) "
-                            "values (%s,%s,%s,%s,%s::vector)",
-                            (doc_id, i + j, h, c, vec_literal(v)))
+                # Identical chunks (shared message tables repeat across API pages)
+                # are embedded once: reuse the stored vector when the text matches.
+                keys = [hashlib.md5(c.encode("utf-8")).hexdigest() for _, c in chunks]
+                vec_by_key = dict(conn.execute(
+                    "select distinct on (md5(content)) md5(content), embedding::text from chunks "
+                    "where md5(content) = any(%s) and embedding is not null", (keys,)).fetchall())
+                need = []
+                for k, hc in zip(keys, chunks):
+                    if k not in vec_by_key and k not in [x[0] for x in need]:
+                        need.append((k, hc))
+                for i in range(0, len(need), 16):
+                    batch = need[i:i + 16]
+                    vecs = embed([(title + " > " + h + "\n" + c)[:6000] for _, (h, c) in batch])
+                    for (k, _), v in zip(batch, vecs):
+                        vec_by_key[k] = vec_literal(v)
+                n_reused += len(chunks) - len(need)
+                for j, (k, (h, c)) in enumerate(zip(keys, chunks)):
+                    conn.execute(
+                        "insert into chunks(doc_id, ord, heading, content, embedding) "
+                        "values (%s,%s,%s,%s,%s::vector)", (doc_id, j, h, c, vec_by_key[k]))
             n_chunks += len(chunks)
             if n % 25 == 0 or n == len(todo):
                 elapsed = time.time() - start
                 left = elapsed / n * (len(todo) - n)
-                print("  embedded %d/%d files, %d chunks, %s elapsed, about %s left"
-                      % (n, len(todo), n_chunks, _eta(elapsed), _eta(left)), flush=True)
+                print("  embedded %d/%d files, %d chunks (%d reused), %s elapsed, about %s left"
+                      % (n, len(todo), n_chunks, n_reused, _eta(elapsed), _eta(left)), flush=True)
         n_embedded = len(todo)
 
         gone = [p for p in existing if p not in seen]
