@@ -98,6 +98,20 @@ def lint():
                 problems.append("dead source  %s -> %s" % (path, s))
         if not re.search(r"\((\.\./)*raw/|\]\(https?://", body) and sources:
             problems.append("no inline citations  %s" % path)
+        # Every citation link must point at a real source file that the page
+        # also lists in `sources:`. Only checkable where raw/ is present.
+        if has_raw:
+            listed = set(str(s) for s in sources) if isinstance(sources, list) else set()
+            seen_targets = set()
+            for href in re.findall(r"\]\(((?:\.\./)+raw/[^)\s#]+)", body):
+                target = posixpath.normpath(posixpath.join(posixpath.dirname(path), href))
+                if target in seen_targets:
+                    continue
+                seen_targets.add(target)
+                if not (ROOT / target).exists():
+                    problems.append("dead citation  %s -> %s" % (path, target))
+                elif target not in listed:
+                    problems.append("unlisted source  %s cites %s but does not list it" % (path, target))
     for path in pages:
         if path not in special and path not in inbound:
             problems.append("orphan       %s" % path)

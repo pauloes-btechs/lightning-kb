@@ -95,7 +95,8 @@ def lookup(conn, name, product=None, limit=8):
         "select e.id, e.kind, e.name, e.product, d.path, d.url, d.version from entities e "
         "left join documents d on d.id = e.doc_id "
         "where (lower(e.name) = lower(%s) or lower(e.name) like '%%.' || lower(%s) "
-        "       or lower(e.name) like '%%' || lower(%s) || '%%') and (%s::text is null or e.product = %s) "
+        "       or replace(lower(e.name), '-', '') like '%%' || replace(lower(%s), '-', '') || '%%') "
+        "      and (%s::text is null or e.product = %s) "
         "order by (lower(e.name) = lower(%s) or lower(e.name) like '%%.' || lower(%s)) desc, "
         "         length(e.name), e.product limit %s",
         (name, name, name, product, product, name, name, limit)).fetchall()
