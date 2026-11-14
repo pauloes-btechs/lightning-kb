@@ -77,4 +77,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nStopped. Finished files are saved; run the same command again to resume.")
+        sys.exit(130)

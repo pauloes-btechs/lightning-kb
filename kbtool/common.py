@@ -25,8 +25,8 @@ def _load_env():
 _load_env()
 DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://kb:kb@127.0.0.1:54329/kb")
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434")
-EMBED_MODEL = os.environ.get("EMBED_MODEL", "qwen3-embedding:8b")
-EMBED_DIM = int(os.environ.get("EMBED_DIM", "4096"))
+EMBED_MODEL = os.environ.get("EMBED_MODEL", "qwen3-embedding:4b")
+EMBED_DIM = int(os.environ.get("EMBED_DIM", "2560"))
 # Prepended to search queries only (never to documents). Qwen3 embedding
 # models are trained to expect it; leave empty for models that are not.
 EMBED_QUERY_PREFIX = os.environ.get("EMBED_QUERY_PREFIX", "").replace("\\n", "\n")
