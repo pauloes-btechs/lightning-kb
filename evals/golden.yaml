@@ -1,0 +1,31 @@
+# Golden questions for retrieval. A question passes when a result whose URL
+# or path contains one of the `expect` strings shows up in the top results.
+#
+# This is a starter set of 12. The numbers only mean something once this
+# file holds 40+ questions you actually care about, with the exact page
+# you would want returned. Add one every time search lets you down.
+questions:
+  - q: How do I get my node's identity pubkey and alias over the API?
+    expect: [api/lnd/lightning/get-info]
+  - q: Which RPC starts a Loop Out swap?
+    expect: [api/loop/swap-client/loop-out]
+  - q: How do I submit an order in Pool?
+    expect: [api/pool/trader/submit-order]
+  - q: Which call sends a Taproot Asset to an address?
+    expect: [api/taproot-assets/taproot-assets/send-asset]
+  - q: What does the LiT proxy GetInfo call return?
+    expect: [api/lit/proxy/get-info]
+  - q: What is a submarine swap and when would I loop out?
+    expect: [/loop]
+  - q: How does Pool's channel lease marketplace work?
+    expect: [/pool]
+  - q: How are Taproot Assets minted and transferred over Lightning?
+    expect: [taproot-assets]
+  - q: What is L402 and how does Aperture use it?
+    expect: [aperture, l402]
+  - q: What does Faraday report about channel revenue?
+    expect: [faraday]
+  - q: How do I embed a self-custodial Lightning wallet in a React Native app?
+    expect: [raw/wavelength]
+  - q: How do I connect to Lightning Terminal with Lightning Node Connect?
+    expect: [lightning-terminal, /lit]

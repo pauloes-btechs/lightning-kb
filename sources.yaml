@@ -1,0 +1,21 @@
+# What gets crawled into raw/. Add a source here and re-run ./kb crawl.
+sources:
+  - name: docs
+    type: llms_txt
+    url: https://docs.lightning.engineering/llms.txt
+
+  - name: wavelength
+    type: llms_txt
+    url: https://wavelength.lightning.engineering/llms.txt
+
+  - name: api
+    type: sitemap
+    url: https://lightning.engineering/api-docs/sitemap.xml
+    include:
+      - /api-docs/api/lnd/
+      - /api-docs/api/loop/
+      - /api-docs/api/pool/
+      - /api-docs/api/faraday/
+      - /api-docs/api/taproot-assets/
+      - /api-docs/api/lit/
+      - /api-docs/category/

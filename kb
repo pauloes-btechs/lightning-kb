@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# ./kb <command>   (run ./kb with no arguments for the list)
+DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ ! -x "$DIR/.venv/bin/python" ]; then echo "Run ./setup.sh first."; exit 1; fi
+cd "$DIR" && exec "$DIR/.venv/bin/python" -m kbtool.cli "$@"

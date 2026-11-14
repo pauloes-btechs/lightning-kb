@@ -1,0 +1,21 @@
+# Local index store. Bound to loopback only; the password is a local
+# throwaway. Data lives in a Docker named volume (not on the SSD), so an
+# exFAT-formatted drive is fine.
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: kb
+      POSTGRES_PASSWORD: kb
+      POSTGRES_DB: kb
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - kbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kb -d kb"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+volumes:
+  kbdata: {}

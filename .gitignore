@@ -1,0 +1,12 @@
+.env
+.venv/
+__pycache__/
+.DS_Store
+._*
+.obsidian/workspace*.json
+
+# raw/ is a verbatim copy of Lightning Labs' docs. It is reproducible with
+# ./kb crawl, so it stays out of git by default. Remove this line only if
+# the repo is private or you have checked the docs' licence.
+raw/
+.claude/settings.local.json
