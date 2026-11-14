@@ -13,6 +13,31 @@ from .common import db, embed, vec_literal
 MODES = ("kw", "vec", "hybrid", "graph")
 CAND = 50
 RRF_K = 60
+# Ranking weights. These are hypotheses, not tuned constants: change one,
+# run ./kb eval, and compare in ./kb history.
+W_VEC = 1.0          # weight of the vector ranking in the fusion
+W_KW = 0.7           # keyword ranking counts for less: common API words ("call",
+                     # "return") match hundreds of chunks and carry little signal
+GRAPH_BOOST = 0.25   # share of a linked page's score added in graph mode
+HUB_DEGREE = 25      # pages with more links than this (category and index pages)
+                     # link to everything, so they do not boost their neighbours
+PRODUCT_BOOST = 1.5  # multiplier when the question names a product and the chunk
+                     # belongs to it ("LiT GetInfo" should not return lnd's GetInfo)
+PRODUCT_ALIASES = {
+    "lnd": ["lnd", "lncli"],
+    "loop": ["loop", "loopd"],
+    "pool": ["pool", "poold"],
+    "faraday": ["faraday", "frcli"],
+    "taproot-assets": ["taproot assets?", "tapd", "tapcli"],
+    "lit": ["lit", "litd", "litcli", "lightning terminal"],
+    "aperture": ["aperture"],
+    "wavelength": ["wavelength", "wavecli"],
+}
+
+
+def products_named(q):
+    return [p for p, names in PRODUCT_ALIASES.items()
+            if re.search(r"\b(" + "|".join(names) + r")\b", q, re.I)]
 
 
 def _or_query(q):
@@ -28,15 +53,16 @@ def search(conn, q, mode="graph", k=8, product=None, layer=None):
             "select id, 1 - (embedding <=> %s::vector) from chunks "
             "order by embedding <=> %s::vector limit %s", (qv, qv, CAND)).fetchall()
         for rank, (cid, s) in enumerate(rows, 1):
-            scores[cid] = scores.get(cid, 0.0) + 1.0 / (RRF_K + rank)
+            scores[cid] = scores.get(cid, 0.0) + W_VEC / (RRF_K + rank)
             sim[cid] = float(s)
     if mode in ("kw", "hybrid", "graph") and _or_query(q):
         rows = conn.execute(
             "select id from chunks, websearch_to_tsquery('english', %s) t "
             "where tsv @@ t order by ts_rank_cd(tsv, t) desc limit %s",
             (_or_query(q), CAND)).fetchall()
+        w = 1.0 if mode == "kw" else W_KW
         for rank, (cid,) in enumerate(rows, 1):
-            scores[cid] = scores.get(cid, 0.0) + 1.0 / (RRF_K + rank)
+            scores[cid] = scores.get(cid, 0.0) + w / (RRF_K + rank)
     if not scores:
         return []
 
@@ -45,21 +71,34 @@ def search(conn, q, mode="graph", k=8, product=None, layer=None):
         "from chunks c join documents d on d.id = c.doc_id where c.id = any(%s)",
         (list(scores),)).fetchall()}
 
+    if mode != "kw":
+        named = products_named(q)
+        if named:
+            for cid in scores:
+                if meta[cid][5] in named:
+                    scores[cid] *= PRODUCT_BOOST
+
     if mode == "graph":
         doc_score = {}
         for cid, s in scores.items():
             doc = meta[cid][0]
             doc_score[doc] = max(doc_score.get(doc, 0.0), s)
         docs = list(doc_score)
+        degree = dict(conn.execute(
+            "select d, count(*) from (select src as d from edges where src = any(%s) "
+            "union all select dst from edges where dst = any(%s)) e group by d", (docs, docs)).fetchall())
         neigh = {}
         for a, b in conn.execute(
                 "select src, dst from edges where src = any(%s) and dst = any(%s)", (docs, docs)).fetchall():
-            neigh.setdefault(a, set()).add(b)
-            neigh.setdefault(b, set()).add(a)
+            if degree.get(a, 0) <= HUB_DEGREE:
+                neigh.setdefault(b, set()).add(a)
+            if degree.get(b, 0) <= HUB_DEGREE:
+                neigh.setdefault(a, set()).add(b)
+        base = dict(scores)
         for cid in scores:
             doc = meta[cid][0]
             if doc in neigh:
-                scores[cid] += 0.5 * max(doc_score[n] for n in neigh[doc])
+                scores[cid] = base[cid] + GRAPH_BOOST * max(doc_score[n] for n in neigh[doc])
 
     # Collapse identical chunks: show the best-ranked copy once and list the
     # other pages that contain the same text.

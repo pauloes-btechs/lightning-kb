@@ -28,11 +28,12 @@ def run_eval(show_misses=True):
         for mode in MODES:
             ranks = []
             for item in golden:
-                ranks.append(_first_hit(search(conn, item["q"], mode, 10), item["expect"]))
+                # Look 50 deep so a miss reports where the page actually ranked.
+                ranks.append(_first_hit(search(conn, item["q"], mode, 50), item["expect"]))
             n = float(len(ranks))
             h1 = sum(1 for r in ranks if r == 1) / n
             h5 = sum(1 for r in ranks if r and r <= 5) / n
-            mrr = sum(1.0 / r for r in ranks if r) / n
+            mrr = sum(1.0 / r for r in ranks if r and r <= 10) / n
             print("%-8s %7.2f %7.2f %7.2f" % (mode, h1, h5, mrr))
             detail = [{"q": g["q"], "rank": r} for g, r in zip(golden, ranks)]
             conn.execute(
@@ -42,10 +43,11 @@ def run_eval(show_misses=True):
             if best is None or mrr > best[1]:
                 best = (mode, mrr, detail)
     if show_misses and best:
-        misses = [d["q"] for d in best[2] if not d["rank"] or d["rank"] > 5]
+        misses = [d for d in best[2] if not d["rank"] or d["rank"] > 5]
         print("\nBest mode: %s. Questions it did not answer in the top 5: %d" % (best[0], len(misses)))
-        for q in misses:
-            print("  - " + q)
+        for d in misses:
+            where = "expected page ranked %d" % d["rank"] if d["rank"] else "expected page not in the top 50"
+            print("  - %s (%s)" % (d["q"], where))
     print("\nSaved to eval_runs. Compare over time: ./kb history")
 
 
