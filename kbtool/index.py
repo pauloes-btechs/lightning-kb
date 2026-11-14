@@ -2,8 +2,10 @@
 
 Incremental: only files whose content hash changed are re-embedded.
 """
+import os
 import posixpath
 import re
+import time
 
 from .common import ROOT, db, embed, norm_url, sha, split_frontmatter, vec_literal
 
@@ -14,12 +16,18 @@ MDLINK_RE = re.compile(r"\]\(([^)\s]+)\)")
 PRODUCTS = ["taproot-assets", "lightning-terminal", "wavelength", "aperture",
             "faraday", "pool", "loop", "lnd", "lit"]
 SKIP = {"wiki/log.md", "wiki/index.md"}
-# Sections that are site boilerplate, not documentation. The docs site appends
-# an "Agent Instructions" block to every page; indexed, it outranks real content.
-SKIP_HEADINGS = ("agent instructions",)
+# Sections left out of the index (raw/ keeps them, so the wiki writer can still
+# read them). Matched against heading text, case-insensitive. Set in .env:
+#   KB_SKIP_SECTIONS=agent instructions,code samples
+# - "agent instructions": boilerplate the docs site appends to every page.
+# - "code samples": near-identical client boilerplate on every API method page,
+#   roughly two thirds of the API text. The RPC signature, REST path and field
+#   tables sit outside it and are always indexed.
+SKIP_HEADINGS = tuple(h.strip().lower() for h in os.environ.get(
+    "KB_SKIP_SECTIONS", "agent instructions,code samples").split(",") if h.strip())
 TAG_RE = re.compile(r"<[^>]+>")
 # Bump when chunking rules change, so every file is re-chunked on the next index.
-CHUNK_VERSION = "2"
+CHUNK_VERSION = "3|" + ",".join(SKIP_HEADINGS)
 
 
 def chunk(body):
@@ -87,9 +95,13 @@ def _files():
                     yield layer, rel, f
 
 
+def _eta(seconds):
+    m = int(seconds // 60)
+    return "%dh%02dm" % (m // 60, m % 60) if m >= 60 else ("%dm" % m if m else "under 1m")
+
+
 def run(url=None):
-    seen, texts = {}, {}
-    n_embedded = 0
+    seen, texts, todo = {}, {}, []
     with db(url) as conn:
         existing = dict(conn.execute("select path, sha256 from documents").fetchall())
         for layer, rel, f in _files():
@@ -98,33 +110,44 @@ def run(url=None):
             digest = sha(CHUNK_VERSION + raw_text)
             seen[rel] = True
             texts[rel] = (meta, body)
-            if existing.get(rel) == digest:
-                continue
+            if existing.get(rel) != digest:
+                todo.append((layer, rel, f, meta, body, digest))
+        if todo:
+            print("%d files to embed (%d already up to date)" % (len(todo), len(seen) - len(todo)))
+        start, n_chunks = time.time(), 0
+        for n, (layer, rel, f, meta, body, digest) in enumerate(todo, 1):
             title = str(meta.get("title") or f.stem)
             parts = rel.split("/")
             source = parts[1] if layer == "raw" and len(parts) > 2 else layer
-            doc_id = conn.execute(
-                """insert into documents(path, layer, source, product, title, url, sha256)
-                   values (%s,%s,%s,%s,%s,%s,%s)
-                   on conflict (path) do update set layer=excluded.layer, source=excluded.source,
-                     product=excluded.product, title=excluded.title, url=excluded.url,
-                     sha256=excluded.sha256, updated_at=now()
-                   returning id""",
-                (rel, layer, source, _product(rel), title, meta.get("source_url"), digest),
-            ).fetchone()[0]
-            conn.execute("delete from chunks where doc_id=%s", (doc_id,))
             chunks = chunk(body)
-            for i in range(0, len(chunks), 16):
-                batch = chunks[i:i + 16]
-                vecs = embed([(title + " > " + h + "\n" + c)[:6000] for h, c in batch])
-                for j, ((h, c), v) in enumerate(zip(batch, vecs)):
-                    conn.execute(
-                        "insert into chunks(doc_id, ord, heading, content, embedding) "
-                        "values (%s,%s,%s,%s,%s::vector)",
-                        (doc_id, i + j, h, c, vec_literal(v)))
-            n_embedded += 1
-            if n_embedded % 25 == 0:
-                print("  embedded %d files" % n_embedded)
+            # One transaction per file: if the run is interrupted, a half-embedded
+            # file is rolled back and redone next time. Safe to Ctrl-C and resume.
+            with conn.transaction():
+                doc_id = conn.execute(
+                    """insert into documents(path, layer, source, product, title, url, sha256)
+                       values (%s,%s,%s,%s,%s,%s,%s)
+                       on conflict (path) do update set layer=excluded.layer, source=excluded.source,
+                         product=excluded.product, title=excluded.title, url=excluded.url,
+                         sha256=excluded.sha256, updated_at=now()
+                       returning id""",
+                    (rel, layer, source, _product(rel), title, meta.get("source_url"), digest),
+                ).fetchone()[0]
+                conn.execute("delete from chunks where doc_id=%s", (doc_id,))
+                for i in range(0, len(chunks), 16):
+                    batch = chunks[i:i + 16]
+                    vecs = embed([(title + " > " + h + "\n" + c)[:6000] for h, c in batch])
+                    for j, ((h, c), v) in enumerate(zip(batch, vecs)):
+                        conn.execute(
+                            "insert into chunks(doc_id, ord, heading, content, embedding) "
+                            "values (%s,%s,%s,%s,%s::vector)",
+                            (doc_id, i + j, h, c, vec_literal(v)))
+            n_chunks += len(chunks)
+            if n % 25 == 0 or n == len(todo):
+                elapsed = time.time() - start
+                left = elapsed / n * (len(todo) - n)
+                print("  embedded %d/%d files, %d chunks, %s elapsed, about %s left"
+                      % (n, len(todo), n_chunks, _eta(elapsed), _eta(left)), flush=True)
+        n_embedded = len(todo)
 
         gone = [p for p in existing if p not in seen]
         if gone:
