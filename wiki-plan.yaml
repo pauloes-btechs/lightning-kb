@@ -1,0 +1,493 @@
+# Every page the wiki build intends to write. Lint accepts links to these slugs
+# before the page exists, so products can be built and merged one at a time.
+# slug = file name without .md. Folders: component -> wiki/components/, service ->
+# wiki/services/, howto -> wiki/howtos/, concept -> wiki/concepts/.
+pages:
+- slug: lnd
+  title: lnd
+  type: component
+  scope: lnd
+- slug: loop
+  title: Loop
+  type: component
+  scope: loop
+- slug: pool
+  title: Pool
+  type: component
+  scope: pool
+- slug: faraday
+  title: Faraday
+  type: component
+  scope: faraday
+- slug: taproot-assets
+  title: Taproot Assets (tapd)
+  type: component
+  scope: taproot-assets
+- slug: lightning-terminal
+  title: Lightning Terminal (litd)
+  type: component
+  scope: lit
+- slug: aperture
+  title: Aperture
+  type: component
+  scope: aperture
+- slug: wavelength
+  title: Wavelength
+  type: component
+  scope: wavelength
+- slug: lnd-autopilot
+  title: lnd autopilot service
+  type: service
+  scope: lnd
+- slug: lnd-chain-kit
+  title: lnd chain-kit service
+  type: service
+  scope: lnd
+- slug: lnd-chain-notifier
+  title: lnd chain-notifier service
+  type: service
+  scope: lnd
+- slug: lnd-dev
+  title: lnd dev service
+  type: service
+  scope: lnd
+- slug: lnd-invoices
+  title: lnd invoices service
+  type: service
+  scope: lnd
+- slug: lnd-lightning
+  title: lnd lightning service
+  type: service
+  scope: lnd
+- slug: lnd-neutrino-kit
+  title: lnd neutrino-kit service
+  type: service
+  scope: lnd
+- slug: lnd-peers
+  title: lnd peers service
+  type: service
+  scope: lnd
+- slug: lnd-router
+  title: lnd router service
+  type: service
+  scope: lnd
+- slug: lnd-signer
+  title: lnd signer service
+  type: service
+  scope: lnd
+- slug: lnd-state
+  title: lnd state service
+  type: service
+  scope: lnd
+- slug: lnd-switch
+  title: lnd switch service
+  type: service
+  scope: lnd
+- slug: lnd-versioner
+  title: lnd versioner service
+  type: service
+  scope: lnd
+- slug: lnd-wallet-kit
+  title: lnd wallet-kit service
+  type: service
+  scope: lnd
+- slug: lnd-wallet-unlocker
+  title: lnd wallet-unlocker service
+  type: service
+  scope: lnd
+- slug: lnd-watch-only
+  title: lnd watch-only service
+  type: service
+  scope: lnd
+- slug: lnd-watchtower
+  title: lnd watchtower service
+  type: service
+  scope: lnd
+- slug: lnd-watchtower-client
+  title: lnd watchtower-client service
+  type: service
+  scope: lnd
+- slug: loop-debug
+  title: loop debug service
+  type: service
+  scope: loop
+- slug: loop-swap-client
+  title: loop swap-client service
+  type: service
+  scope: loop
+- slug: pool-channel-auctioneer
+  title: pool channel-auctioneer service
+  type: service
+  scope: pool
+- slug: pool-hash-mail
+  title: pool hash-mail service
+  type: service
+  scope: pool
+- slug: pool-trader
+  title: pool trader service
+  type: service
+  scope: pool
+- slug: faraday-server
+  title: faraday faraday-server service
+  type: service
+  scope: faraday
+- slug: tapd-asset-wallet
+  title: taproot-assets asset-wallet service
+  type: service
+  scope: taproot-assets
+- slug: tapd-mailbox
+  title: taproot-assets mailbox service
+  type: service
+  scope: taproot-assets
+- slug: tapd-mint
+  title: taproot-assets mint service
+  type: service
+  scope: taproot-assets
+- slug: tapd-portfolio-pilot
+  title: taproot-assets portfolio-pilot service
+  type: service
+  scope: taproot-assets
+- slug: tapd-price-oracle
+  title: taproot-assets price-oracle service
+  type: service
+  scope: taproot-assets
+- slug: tapd-rfq
+  title: taproot-assets rfq service
+  type: service
+  scope: taproot-assets
+- slug: tapd-tap-dev
+  title: taproot-assets tap-dev service
+  type: service
+  scope: taproot-assets
+- slug: tapd-taproot-asset-channels
+  title: taproot-assets taproot-asset-channels service
+  type: service
+  scope: taproot-assets
+- slug: tapd-taproot-assets
+  title: taproot-assets taproot-assets service
+  type: service
+  scope: taproot-assets
+- slug: tapd-universe
+  title: taproot-assets universe service
+  type: service
+  scope: taproot-assets
+- slug: lit-accounts
+  title: lit accounts service
+  type: service
+  scope: lit
+- slug: lit-autopilot
+  title: lit autopilot service
+  type: service
+  scope: lit
+- slug: lit-firewall
+  title: lit firewall service
+  type: service
+  scope: lit
+- slug: lit-proxy
+  title: lit proxy service
+  type: service
+  scope: lit
+- slug: lit-sessions
+  title: lit sessions service
+  type: service
+  scope: lit
+- slug: lit-status
+  title: lit status service
+  type: service
+  scope: lit
+- slug: using-loop
+  title: 'Using Loop: Loop In and Loop Out'
+  type: howto
+  scope: loop
+- slug: autoloop
+  title: Autoloop
+  type: howto
+  scope: loop
+- slug: static-loop-in-addresses
+  title: Static Loop In addresses
+  type: howto
+  scope: loop
+- slug: instant-loop-outs
+  title: Instant Loop Outs
+  type: howto
+  scope: loop
+- slug: pool-setup
+  title: Installing and starting Pool
+  type: howto
+  scope: pool
+- slug: pool-accounts
+  title: Pool accounts and recovery
+  type: howto
+  scope: pool
+- slug: pool-orders-and-batches
+  title: Pool orders and batch execution
+  type: howto
+  scope: pool
+- slug: pool-channel-leases
+  title: Channel leases
+  type: howto
+  scope: pool
+- slug: sidecar-channels
+  title: Sidecar channels
+  type: howto
+  scope: pool
+- slug: pool-zero-conf-channels
+  title: Zero-confirmation channels in Pool
+  type: howto
+  scope: pool
+- slug: using-faraday
+  title: Using Faraday and frcli
+  type: howto
+  scope: faraday
+- slug: running-aperture
+  title: Installing and running Aperture
+  type: howto
+  scope: aperture
+- slug: aperture-pricing-and-services
+  title: Aperture services and pricing
+  type: howto
+  scope: aperture
+- slug: aperture-mailbox-and-lnc
+  title: Aperture as LNC mailbox and backend
+  type: howto
+  scope: aperture
+- slug: machine-payments-protocol
+  title: Machine Payments Protocol
+  type: howto
+  scope: aperture
+- slug: running-litd
+  title: Installing and running litd
+  type: howto
+  scope: lit
+- slug: lightning-node-connect
+  title: Lightning Node Connect
+  type: howto
+  scope: lit
+- slug: litd-accounts-guide
+  title: Using litd accounts
+  type: howto
+  scope: lit
+- slug: terminal-liquidity-tools
+  title: 'Terminal liquidity tools: autofees, autoopen, reports'
+  type: howto
+  scope: lit
+- slug: litd-integration
+  title: Integrating litd and its CLI
+  type: howto
+  scope: lit
+- slug: terminal-privacy-and-security
+  title: Terminal privacy and security
+  type: howto
+  scope: lit
+- slug: litd-troubleshooting
+  title: Troubleshooting litd and testing on signet
+  type: howto
+  scope: lit
+- slug: tapd-getting-started
+  title: Getting started with tapd
+  type: howto
+  scope: taproot-assets
+- slug: minting-taproot-assets
+  title: Minting assets, metadata and collectibles
+  type: howto
+  scope: taproot-assets
+- slug: tapd-universes-guide
+  title: Working with universes
+  type: howto
+  scope: taproot-assets
+- slug: taproot-assets-channels-guide
+  title: Taproot Assets channels in practice
+  type: howto
+  scope: taproot-assets
+- slug: tapd-rfq-guide
+  title: RFQ and price oracles in practice
+  type: howto
+  scope: taproot-assets
+- slug: edge-node-operation
+  title: Becoming an edge node
+  type: howto
+  scope: taproot-assets
+- slug: tapd-operations
+  title: 'Operating tapd safely: multisig, debugging, tips'
+  type: howto
+  scope: taproot-assets
+- slug: running-lnd
+  title: Installing, running and first steps with lnd
+  type: howto
+  scope: lnd
+- slug: lnd-configuration
+  title: lnd configuration and lnd.conf
+  type: howto
+  scope: lnd
+- slug: lnd-wallet-and-psbt
+  title: lnd wallet, PSBT and key import
+  type: howto
+  scope: lnd
+- slug: lnd-sending-payments
+  title: 'Sending with lnd: payments, AMP, keysend, probing'
+  type: howto
+  scope: lnd
+- slug: lnd-receiving-payments
+  title: 'Receiving with lnd: invoices and blinded paths'
+  type: howto
+  scope: lnd
+- slug: lnd-channel-fees
+  title: Channel fees and inbound fees in lnd
+  type: howto
+  scope: lnd
+- slug: lnd-macaroons
+  title: lnd macaroons
+  type: howto
+  scope: lnd
+- slug: lnd-tor-and-networking
+  title: Tor, NAT traversal and node security
+  type: howto
+  scope: lnd
+- slug: lnd-recovery
+  title: Disaster recovery and migration
+  type: howto
+  scope: lnd
+- slug: lnd-interceptors
+  title: HTLC interceptor, RPC middleware and channel acceptor
+  type: howto
+  scope: lnd
+- slug: lnd-routing-node-operations
+  title: Operating a routing node with lnd
+  type: howto
+  scope: lnd
+- slug: lnd-sweeper
+  title: The lnd sweeper and unconfirmed transactions
+  type: howto
+  scope: lnd
+- slug: lnd-watchtower-setup
+  title: Setting up watchtowers
+  type: howto
+  scope: lnd
+- slug: lnd-debugging-and-contributing
+  title: Debugging, fuzzing and contributing to lnd
+  type: howto
+  scope: lnd
+- slug: wavelength-web-sdk
+  title: Wavelength on the web
+  type: howto
+  scope: wavelength
+- slug: wavelength-react-native-sdk
+  title: Wavelength for React Native
+  type: howto
+  scope: wavelength
+- slug: wavelength-native-mobile
+  title: Wavelength on native iOS and Android
+  type: howto
+  scope: wavelength
+- slug: wavelength-wallet-guides
+  title: 'Wavelength wallet guides: create, send, receive, restore'
+  type: howto
+  scope: wavelength
+- slug: wavelength-unilateral-exit
+  title: 'Leaving Ark: unilateral exit'
+  type: howto
+  scope: wavelength
+- slug: wavelength-api
+  title: Wavelength remote API (gRPC and REST)
+  type: howto
+  scope: wavelength
+- slug: wavelength-cli
+  title: wavecli command reference
+  type: howto
+  scope: wavelength
+- slug: wavelength-sdk-reference
+  title: Wavelength SDK packages
+  type: howto
+  scope: wavelength
+- slug: payment-channels
+  title: Payment channels and their lifecycle
+  type: concept
+  scope: concepts
+- slug: sweeping
+  title: Sweeping
+  type: concept
+  scope: concepts
+- slug: watchtowers
+  title: Watchtowers
+  type: concept
+  scope: concepts
+- slug: htlc
+  title: Hash time-locked contracts (HTLCs)
+  type: concept
+  scope: concepts
+- slug: multihop-payments
+  title: Multihop payments, the payment cycle and timelocks
+  type: concept
+  scope: concepts
+- slug: submarine-swaps
+  title: Submarine swaps
+  type: concept
+  scope: concepts
+- slug: routing-nodes
+  title: What makes a good routing node and good peers
+  type: concept
+  scope: concepts
+- slug: pathfinding
+  title: Pathfinding and route selection
+  type: concept
+  scope: concepts
+- slug: channel-fees
+  title: Channel fees
+  type: concept
+  scope: concepts
+- slug: multipath-payments
+  title: Multipath payments (MPP)
+  type: concept
+  scope: concepts
+- slug: lightning-invoices
+  title: Lightning invoices and the payment lifecycle
+  type: concept
+  scope: concepts
+- slug: gossip-network
+  title: The gossip network
+  type: concept
+  scope: concepts
+- slug: liquidity
+  title: 'Liquidity: inbound, outbound and managing it'
+  type: concept
+  scope: concepts
+- slug: inbound-capacity
+  title: Getting inbound capacity
+  type: concept
+  scope: concepts
+- slug: lightning-service-providers
+  title: Lightning service providers
+  type: concept
+  scope: concepts
+- slug: merchant-liquidity
+  title: Liquidity management for merchants
+  type: concept
+  scope: concepts
+- slug: l402
+  title: L402
+  type: concept
+  scope: concepts
+- slug: macaroons
+  title: Macaroons
+  type: concept
+  scope: concepts
+- slug: taproot-assets-protocol
+  title: The Taproot Assets protocol
+  type: concept
+  scope: concepts
+- slug: taproot-assets-on-lightning
+  title: 'Taproot Assets on Lightning: edge nodes and trustless swaps'
+  type: concept
+  scope: concepts
+- slug: lightning-network-overview
+  title: 'The Lightning Network: overview'
+  type: concept
+  scope: concepts
+- slug: wavelength-concepts
+  title: 'Wavelength concepts: Ark, VTXOs, balances, lifecycle'
+  type: concept
+  scope: wavelength
+- slug: glossary
+  title: Glossary
+  type: concept
+  scope: concepts
