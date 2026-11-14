@@ -13,7 +13,13 @@ WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|[^\]]*)?\]\]")
 MDLINK_RE = re.compile(r"\]\(([^)\s]+)\)")
 PRODUCTS = ["taproot-assets", "lightning-terminal", "wavelength", "aperture",
             "faraday", "pool", "loop", "lnd", "lit"]
-SKIP = {"wiki/log.md"}
+SKIP = {"wiki/log.md", "wiki/index.md"}
+# Sections that are site boilerplate, not documentation. The docs site appends
+# an "Agent Instructions" block to every page; indexed, it outranks real content.
+SKIP_HEADINGS = ("agent instructions",)
+TAG_RE = re.compile(r"<[^>]+>")
+# Bump when chunking rules change, so every file is re-chunked on the next index.
+CHUNK_VERSION = "2"
 
 
 def chunk(body):
@@ -22,7 +28,8 @@ def chunk(body):
 
     def flush():
         text = "\n".join(buf).strip()
-        if len(text) >= 20:
+        skip = any(k in h.lower() for h in path for k in SKIP_HEADINGS)
+        if len(text) >= 20 and not skip:
             sections.append((" > ".join(path), text))
         del buf[:]
 
@@ -34,7 +41,7 @@ def chunk(body):
             flush()
             level = len(m.group(1))
             del path[level - 1:]
-            path.append(m.group(2).strip())
+            path.append(TAG_RE.sub("", m.group(2)).strip())   # drop anchor tags
         else:
             buf.append(line)
     flush()
@@ -88,7 +95,7 @@ def run(url=None):
         for layer, rel, f in _files():
             raw_text = f.read_text(errors="replace")
             meta, body = split_frontmatter(raw_text)
-            digest = sha(raw_text)
+            digest = sha(CHUNK_VERSION + raw_text)
             seen[rel] = True
             texts[rel] = (meta, body)
             if existing.get(rel) == digest:
