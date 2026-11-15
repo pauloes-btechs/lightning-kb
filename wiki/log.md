@@ -45,3 +45,13 @@ Append-only. One line per operation: date, operation, what changed.
 - 2026-11-14 conflict (tapd): asset channels: group key prefix, asset ID versus `--group_key`, and the `--network` sentence; recorded on [[taproot-assets-channels-guide]].
 - 2026-11-14 conflict (tapd): RFQ order arithmetic and `mockoraclesatsperasset` units; RFQ counterparty on the edge node page; recorded on [[tapd-rfq-guide]] and [[edge-node-operation]].
 - 2026-11-14 conflict (tapd): Windows and macOS data directories and `tap.conf` versus `tapd.conf`; alpha status; recorded on [[tapd-operations]].
+- 2026-11-14 ingest lnd: 33 pages (component, 18 services, 14 how-tos) from 216 raw files; all six checkers PASS (two after one fix round, one after two).
+- 2026-11-14 conflict (lnd): HtlcInterceptor's description mentions a boolean response and a ResolveHoldForward endpoint that the page does not document; recorded on [[lnd-router]].
+- 2026-11-14 conflict (lnd): message Source links labelled `lightning.proto` point at router.proto and invoices.proto; recorded on [[lnd-router]] and [[lnd-invoices]].
+- 2026-11-14 conflict (lnd): XCreateAccount says NextAddr takes `lnrpc.AddressType`, while NextAddr's page shows `walletrpc.AddressType`; recorded on [[lnd-wallet-kit]].
+- 2026-11-14 conflict (lnd): `feeurl` versus `fee.url`, and a blinding-option comment naming the wrong option; recorded on [[lnd-configuration]].
+- 2026-11-14 conflict (lnd): `--bitcoin.active` used in examples but deprecated in the sample config; BIP-0084 account described as holding BIP-0049 keys; recorded on [[lnd-wallet-and-psbt]].
+- 2026-11-14 conflict (lnd): mission-control option names, `--key_send` versus `--keysend`, and `--amp-reuse`; recorded on [[lnd-sending-payments]].
+- 2026-11-14 conflict (lnd): fee-rate units in the fee examples; recorded on [[lnd-channel-fees]]. 'Seven actions' listed as eight; recorded on [[lnd-macaroons]].
+- 2026-11-14 conflict (lnd): three paths for `channel.backup`, two for `channel.db`, and when the backup is updated; recorded on [[lnd-recovery]].
+- 2026-11-14 conflict (lnd): `macaroons.db` versus `macaroon.db`, the hybrid-mode option name, and the Tor DNS host; recorded on [[lnd-tor-and-networking]].

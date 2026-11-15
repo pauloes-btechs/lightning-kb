@@ -7,6 +7,7 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[aperture]]: What Aperture is: an L402 and MPP reverse proxy, how it relates to lnd and LNC, install and admin interfaces.
 - [[faraday]]: What Faraday is, its lnd and bitcoind requirements, bundling in litd, frcli and API ports.
 - [[lightning-terminal]]: What Lightning Terminal (litd) is, the LNC privacy model, bundled products, port 8443 and litcli.
+- [[lnd]]: What lnd is, its chain back-ends and capabilities, lncli, ports, REST encoding, and links to every lnd page.
 - [[loop]]: What Loop is, Loop In versus Loop Out, its relation to lnd and litd, install, CLI and API ports.
 - [[pool]]: What Pool is, its requirements, how it relates to lnd, litd and Loop, the CLI and API ports.
 - [[taproot-assets]]: What tapd is, its features, its link to lnd, ports and proto files.
@@ -19,6 +20,24 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[lit-proxy]]: GetInfo, StopDaemon and BakeSuperMacaroon.
 - [[lit-sessions]]: AddSession, ListSessions and RevokeSession; the Session message, session types and states.
 - [[lit-status]]: The SubServerStatus RPC and its fields.
+- [[lnd-autopilot]]: Status, ModifyStatus, QueryScores and SetScores for the autopilot agent.
+- [[lnd-chain-kit]]: GetBlock, GetBlockHeader, GetBestBlock and GetBlockHash.
+- [[lnd-chain-notifier]]: Streaming notifications for blocks, confirmations and spends.
+- [[lnd-dev]]: ImportGraph, Quiesce and CreateOffer.
+- [[lnd-invoices]]: The 6 invoicesrpc RPCs, the hold-invoice flow and invoice states.
+- [[lnd-lightning]]: All 67 Lightning service RPCs: signature, REST path, messages and key fields, in nine groups.
+- [[lnd-neutrino-kit]]: The eight neutrino light-client RPCs.
+- [[lnd-peers]]: UpdateNodeAnnouncement and its actions.
+- [[lnd-router]]: The 19 routerrpc RPCs: payments, routes, mission control, HTLC interception.
+- [[lnd-signer]]: The 13 Signer RPCs: raw signing, input scripts, message signing, ECDH and MuSig2.
+- [[lnd-state]]: GetState, SubscribeState and the wallet states.
+- [[lnd-switch]]: The 5 switchrpc RPCs: SendOnion, TrackOnion and attempt deletion.
+- [[lnd-versioner]]: GetVersion and its build and version fields.
+- [[lnd-wallet-kit]]: The 30 WalletKit RPCs: keys, accounts, leases, transactions, PSBTs, fees, sweeps and message signing.
+- [[lnd-wallet-unlocker]]: GenSeed, InitWallet, UnlockWallet and ChangePassword.
+- [[lnd-watch-only]]: SignCoordinatorStreams, the stream for remote signers.
+- [[lnd-watchtower-client]]: The eight wtclientrpc RPCs for towers, sessions, stats and policy.
+- [[lnd-watchtower]]: GetInfo for the companion watchtower.
 - [[loop-debug]]: The debug service's single RPC, ForceAutoLoop (testing only, not mainnet).
 - [[loop-swap-client]]: All 33 swap-client RPCs: purpose, gRPC signature, REST path, messages and key fields.
 - [[pool-channel-auctioneer]]: The 14 channel-auctioneer RPCs: accounts, orders, batch streams, terms and snapshots.
@@ -69,6 +88,19 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[litd-accounts-guide]]: Custodial accounts in practice: rules enforced, creating accounts, macaroons and LNC sessions.
 - [[litd-integration]]: Moving services into and out of integrated mode, and CLI arguments per bundled tool.
 - [[litd-troubleshooting]]: Connection fixes, Pool database and account recovery, and running the stack on signet.
+- [[lnd-channel-fees]]: Base fee and fee rate, feereport, updatechanpolicy and inbound fees.
+- [[lnd-configuration]]: A map of the sample lnd.conf: its sections, the options it explains and their defaults.
+- [[lnd-debugging-and-contributing]]: Log settings, profiling, fuzzing, and how to contribute.
+- [[lnd-interceptors]]: The HTLC interceptor, RPC middleware and channel acceptor.
+- [[lnd-macaroons]]: Default macaroons, baking, constraining, revoking and stateless init.
+- [[lnd-receiving-payments]]: Invoices versus keysend, AddInvoice parameters, monitoring invoices and blinded paths.
+- [[lnd-recovery]]: What to back up, recovering a node, and migrating to a new machine.
+- [[lnd-routing-node-operations]]: Routing-node configuration: connections, channel defaults, database, rebalancing and gossip.
+- [[lnd-sending-payments]]: Pathfinding, mission control, SendPaymentV2, AMP, keysend messages and probing.
+- [[lnd-sweeper]]: Sweeper budgets and deadlines, the fee function, bumpfee, RBF and CPFP.
+- [[lnd-tor-and-networking]]: Tor setup and hybrid mode, Tor control authentication, NAT traversal and node security.
+- [[lnd-wallet-and-psbt]]: Creating and unlocking the wallet, PSBT funding, batched channel opens and key import.
+- [[lnd-watchtower-setup]]: Running a watchtower and the watchtower client commands.
 - [[machine-payments-protocol]]: MPP compared with L402 and the aperture.yaml keys that enable it.
 - [[minting-taproot-assets]]: Asset parameters, metadata, decimal display, collectibles and external-signer keys.
 - [[pool-accounts]]: The account contract, creating, funding, withdrawing and closing accounts, and recovery.
@@ -78,6 +110,7 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[pool-zero-conf-channels]]: The zero-conf trust model, lnd.conf settings, and buying and selling zero-conf channels.
 - [[running-aperture]]: Building Aperture, configuring aperture.yaml, obtaining a TLS certificate, starting and verifying.
 - [[running-litd]]: Installing litd, integrated and remote configuration, reaching the UI, and connecting to Terminal.
+- [[running-lnd]]: Installing lnd from binaries, source or Docker, setting up the back-end, upgrading and first steps.
 - [[sidecar-channels]]: The sidecar ticket flow: offer, register, bid and expect-channel.
 - [[static-loop-in-addresses]]: Static address design, deposit and swap flow, the `loop static` commands and related RPCs.
 - [[tapd-getting-started]]: Installing and running tapd; minting, syncing, addresses, sending and burning with tapcli; Polar.
