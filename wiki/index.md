@@ -9,6 +9,7 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[lightning-terminal]]: What Lightning Terminal (litd) is, the LNC privacy model, bundled products, port 8443 and litcli.
 - [[loop]]: What Loop is, Loop In versus Loop Out, its relation to lnd and litd, install, CLI and API ports.
 - [[pool]]: What Pool is, its requirements, how it relates to lnd, litd and Loop, the CLI and API ports.
+- [[taproot-assets]]: What tapd is, its features, its link to lnd, ports and proto files.
 
 ## Services
 - [[faraday-server]]: All nine Faraday RPCs: purpose, gRPC signature, REST path, messages and key fields.
@@ -23,6 +24,16 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[pool-channel-auctioneer]]: The 14 channel-auctioneer RPCs: accounts, orders, batch streams, terms and snapshots.
 - [[pool-hash-mail]]: The four hash-mail cipher box stream RPCs.
 - [[pool-trader]]: The 30 trader RPCs of poold: accounts, orders, batches, leases and sidecar tickets.
+- [[tapd-asset-wallet]]: 15 RPCs: virtual PSBTs, keys, ownership proofs, leases and backup.
+- [[tapd-mailbox]]: 4 RPCs: send, receive, info and remove.
+- [[tapd-mint]]: The 7 mint RPCs for minting assets and managing batches.
+- [[tapd-portfolio-pilot]]: 3 gRPC-only RPCs: ResolveRequest, VerifyAcceptQuote and QueryAssetRates.
+- [[tapd-price-oracle]]: The QueryAssetRates RPC, its intents and version notes.
+- [[tapd-rfq]]: 7 RPCs: buy and sell orders and offers, accepted quotes, events and forwarding history.
+- [[tapd-tap-dev]]: 3 RPCs: the deprecated ImportProof and send and receive event subscriptions.
+- [[tapd-taproot-asset-channels]]: 10 RPCs: FundChannel, SendPayment, AddInvoice, decoding and tracking.
+- [[tapd-taproot-assets]]: All 26 taprpc RPCs: assets, balances, addresses, sending, burning and proofs.
+- [[tapd-universe]]: All 26 universe RPCs: roots, leaves, proofs, sync, federation, stats and supply commitments.
 
 ## Concepts
 - [[channel-fees]]: Base fee and fee rate, who charges them, and the lncli fee policy commands.
@@ -52,12 +63,14 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[aperture-mailbox-and-lnc]]: Self-hosting the LNC mailbox and connecting Aperture to lnd over LNC.
 - [[aperture-pricing-and-services]]: Service definitions, fixed and dynamic pricing, and enabling the admin services.
 - [[autoloop]]: Automatic swap dispatch: easy autoloop, rules, fees, budget, and why swaps are disqualified.
+- [[edge-node-operation]]: Edge node building blocks and the software that provides each.
 - [[instant-loop-outs]]: Reservations, setup and the `loop instantout` flow.
 - [[lightning-node-connect]]: How LNC works: pairing, handshakes, the mailbox proxy, the WASM client and lnc-web.
 - [[litd-accounts-guide]]: Custodial accounts in practice: rules enforced, creating accounts, macaroons and LNC sessions.
 - [[litd-integration]]: Moving services into and out of integrated mode, and CLI arguments per bundled tool.
 - [[litd-troubleshooting]]: Connection fixes, Pool database and account recovery, and running the stack on signet.
 - [[machine-payments-protocol]]: MPP compared with L402 and the aperture.yaml keys that enable it.
+- [[minting-taproot-assets]]: Asset parameters, metadata, decimal display, collectibles and external-signer keys.
 - [[pool-accounts]]: The account contract, creating, funding, withdrawing and closing accounts, and recovery.
 - [[pool-channel-leases]]: Inspecting leases and how lease lifetime is enforced.
 - [[pool-orders-and-batches]]: Asks and bids, order flags, fee formulas, lease durations, batch execution and snapshots.
@@ -67,6 +80,11 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[running-litd]]: Installing litd, integrated and remote configuration, reaching the UI, and connecting to Terminal.
 - [[sidecar-channels]]: The sidecar ticket flow: offer, register, bid and expect-channel.
 - [[static-loop-in-addresses]]: Static address design, deposit and swap flow, the `loop static` commands and related RPCs.
+- [[tapd-getting-started]]: Installing and running tapd; minting, syncing, addresses, sending and burning with tapcli; Polar.
+- [[tapd-operations]]: Backups, key storage, RPC exposure, multisig, debugging and payment error tips.
+- [[tapd-rfq-guide]]: RFQ messages, order arithmetic, price oracle roles and configuration.
+- [[tapd-universes-guide]]: Local and public universes, federations and syncing.
+- [[taproot-assets-channels-guide]]: lit.conf options; opening, invoicing, paying and closing asset channels; Asset Loop Out.
 - [[terminal-liquidity-tools]]: Channels, health checks, rankings, the liquidity report, Autofees, AutoOpen, and Loop and Pool in the UI.
 - [[terminal-privacy-and-security]]: The security model, what the proxy can see, and the privacy policy and terms of use.
 - [[using-faraday]]: Installing and running Faraday, litd configuration, and each frcli command with its flags.

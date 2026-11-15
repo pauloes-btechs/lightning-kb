@@ -37,3 +37,11 @@ Append-only. One line per operation: date, operation, what changed.
 - 2026-11-14 conflict (concepts): payment-channels/etymology.md says private channels cannot be used for routing, while what-makes-a-good-routing-node.md describes routing opportunities through them; recorded on [[routing-nodes]].
 - 2026-11-14 conflict (concepts): the example Loop macaroon's `loop_out_monthly_volume_sats` is 200000000 in l402/macaroons.md and 2000000 in l402/l402.md; recorded on [[macaroons]].
 - 2026-11-14 conflict (concepts): taproot-assets/faq.md says assets in Lightning channels will be possible in the future, while taproot-assets-on-lightning.md says they can be deposited now; recorded on [[taproot-assets-on-lightning]].
+- 2026-11-14 ingest taproot-assets: 18 pages (component, 10 services, 7 how-tos) from 117 raw files; all four checkers PASS (component and main service after 2 rounds, asset-wallet after a one-sentence fix).
+- 2026-11-14 conflict (tapd): SealBatch page gives `tapcli assets mint seal`, but `tapcli assets mint --help` lists no seal command; recorded on [[tapd-mint]].
+- 2026-11-14 conflict (tapd): asset-wallet message Source link text says `taprootassets.proto` while the target is `assetwallet.proto`; mailbox flow names `MailboxMessage` while the response has `messages`; price-oracle rate units; rfq `peer_accepted_sell_quote` versus `peer_accepted_sell_offer`; recorded on the service pages.
+- 2026-11-14 conflict (tapd): getting started: finalize command, signet universe host, and mint example amounts disagree across first-steps.md, polar.md, get-tapd.md and universes.md; recorded on [[tapd-getting-started]].
+- 2026-11-14 conflict (tapd): minting: metadata command, new-group flag, and `--group_anchor` versus `--group_key`; recorded on [[minting-taproot-assets]].
+- 2026-11-14 conflict (tapd): asset channels: group key prefix, asset ID versus `--group_key`, and the `--network` sentence; recorded on [[taproot-assets-channels-guide]].
+- 2026-11-14 conflict (tapd): RFQ order arithmetic and `mockoraclesatsperasset` units; RFQ counterparty on the edge node page; recorded on [[tapd-rfq-guide]] and [[edge-node-operation]].
+- 2026-11-14 conflict (tapd): Windows and macOS data directories and `tap.conf` versus `tapd.conf`; alpha status; recorded on [[tapd-operations]].
