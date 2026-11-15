@@ -55,3 +55,9 @@ Append-only. One line per operation: date, operation, what changed.
 - 2026-11-14 conflict (lnd): fee-rate units in the fee examples; recorded on [[lnd-channel-fees]]. 'Seven actions' listed as eight; recorded on [[lnd-macaroons]].
 - 2026-11-14 conflict (lnd): three paths for `channel.backup`, two for `channel.db`, and when the backup is updated; recorded on [[lnd-recovery]].
 - 2026-11-14 conflict (lnd): `macaroons.db` versus `macaroon.db`, the hybrid-mode option name, and the Tor DNS host; recorded on [[lnd-tor-and-networking]].
+- 2026-11-14 ingest wavelength: 10 pages (component, concepts, 8 how-tos) from 80 raw files; all three checkers PASS in the first round, about 830 claims.
+- 2026-11-14 conflict (wavelength): round duration is 'well under a minute', 'around one minute' and '~90 seconds' in different pages; compatible Esplora servers differ; recorded on [[wavelength-concepts]].
+- 2026-11-14 conflict (wavelength): phase after `create()`, and whether the Ark server or the swap server sets up a Lightning receive; recorded on [[wavelength-wallet-guides]].
+- 2026-11-14 conflict (wavelength): whether `runtimeThread: 'main'` changes the storage backend; recorded on [[wavelength-web-sdk]].
+- 2026-11-14 conflict (wavelength): `RUNTIME_ASSETS` has 8 keys in the declaration and 9 in the table; the failed `RecoveryState` includes `walletUsable` in core but not in the React hook; recorded on [[wavelength-sdk-reference]].
+- 2026-11-14 conflict (wavelength): whether wavecli wraps every WalletService method, and the shape of the REST stream envelope; recorded on [[wavelength-api]].

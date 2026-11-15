@@ -11,6 +11,7 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[loop]]: What Loop is, Loop In versus Loop Out, its relation to lnd and litd, install, CLI and API ports.
 - [[pool]]: What Pool is, its requirements, how it relates to lnd, litd and Loop, the CLI and API ports.
 - [[taproot-assets]]: What tapd is, its features, its link to lnd, ports and proto files.
+- [[wavelength]]: What Wavelength is: the self-custodial client, what you run versus what is managed, its packages, gateways and agent tooling.
 
 ## Services
 - [[faraday-server]]: All nine Faraday RPCs: purpose, gRPC signature, REST path, messages and key fields.
@@ -77,6 +78,7 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[taproot-assets-on-lightning]]: Asset channels, multi-hop transfers, exchange rates, edge nodes and trustless swaps.
 - [[taproot-assets-protocol]]: Taptweak, sparse Merkle sum trees, issuance, transfers, addresses, proofs and universes.
 - [[watchtowers]]: Channel breaches, the penalty mechanism and how watchtowers work.
+- [[wavelength-concepts]]: Ark, the operator, VTXOs, balances, swaps, activity events, lifecycle, keys and recovery, and RuntimeConfig.
 
 ## How-tos
 - [[aperture-mailbox-and-lnc]]: Self-hosting the LNC mailbox and connecting Aperture to lnd over LNC.
@@ -122,6 +124,14 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[terminal-privacy-and-security]]: The security model, what the proxy can see, and the privacy policy and terms of use.
 - [[using-faraday]]: Installing and running Faraday, litd configuration, and each frcli command with its flags.
 - [[using-loop]]: Installing loopd, quotes, Loop In and Loop Out with the CLI, fees, and peering with Loop.
+- [[wavelength-api]]: The remote wallet API: build tags, endpoints, REST conventions and all 16 wallet routes.
+- [[wavelength-cli]]: wavecli connection flags, output and exit codes, and all 15 commands.
+- [[wavelength-native-mobile]]: The Kotlin and Swift wrappers, the in-process daemon architecture, and the quickstart.
+- [[wavelength-react-native-sdk]]: React Native requirements, install, native binaries, quickstart, passkey setup and troubleshooting.
+- [[wavelength-sdk-reference]]: Every export of the core, web, React and React Native packages.
+- [[wavelength-unilateral-exit]]: Cooperative versus unilateral exit, the exit plan, single and batch exits, status and sweep.
+- [[wavelength-wallet-guides]]: Creating a wallet, passkeys, deposits, balance, receiving, sending, restoring and handling errors.
+- [[wavelength-web-sdk]]: Web packages, requirements, COOP and COEP, hosting runtime assets, the React quickstart, storage and troubleshooting.
 
 ## Comparisons
 
