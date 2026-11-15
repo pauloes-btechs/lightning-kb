@@ -33,3 +33,7 @@ Append-only. One line per operation: date, operation, what changed.
 - 2026-11-14 conflict (pool): counterparty choice, script enforcement, fixed 2016-block lease versus several duration markets, clearing price, and `pool order submit` examples disagree across faq.md, orders.md, overview.md and batch_execution.md; recorded on [[pool-orders-and-batches]].
 - 2026-11-14 conflict (pool): `accounts leases` versus `pool auction leases`, and a 2016-block minimum versus a 144-block example; recorded on [[pool-channel-leases]].
 - 2026-11-14 conflict (pool): sidecar offer `--capacity` versus `--amt`, `sidecar_ticket` versus `ticket`, and Carol versus Charlie; recorded on [[sidecar-channels]].
+- 2026-11-14 ingest concepts: 22 pages from 49 raw files (the-lightning-network and community-resources); both checkers PASS in the first round.
+- 2026-11-14 conflict (concepts): payment-channels/etymology.md says private channels cannot be used for routing, while what-makes-a-good-routing-node.md describes routing opportunities through them; recorded on [[routing-nodes]].
+- 2026-11-14 conflict (concepts): the example Loop macaroon's `loop_out_monthly_volume_sats` is 200000000 in l402/macaroons.md and 2000000 in l402/l402.md; recorded on [[macaroons]].
+- 2026-11-14 conflict (concepts): taproot-assets/faq.md says assets in Lightning channels will be possible in the future, while taproot-assets-on-lightning.md says they can be deposited now; recorded on [[taproot-assets-on-lightning]].

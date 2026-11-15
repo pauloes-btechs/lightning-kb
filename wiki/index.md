@@ -25,6 +25,28 @@ Every wiki page, one line each, grouped by folder. Maintained by the agent
 - [[pool-trader]]: The 30 trader RPCs of poold: accounts, orders, batches, leases and sidecar tickets.
 
 ## Concepts
+- [[channel-fees]]: Base fee and fee rate, who charges them, and the lncli fee policy commands.
+- [[glossary]]: 176 terms from the two source glossaries, each cited.
+- [[gossip-network]]: What gossip is for, the network graph, spam protection and announcement types.
+- [[htlc]]: HTLC conditions and lifecycle from creation to on-chain settlement.
+- [[inbound-capacity]]: What inbound capacity is and how to get it: spending, Loop Out, Pool.
+- [[l402]]: The L402 flow, macaroon contents, wire format, security and implementations.
+- [[lightning-invoices]]: BOLT 11 invoice structure, prefixes, amounts, tagged fields and LNURL.
+- [[lightning-network-overview]]: What the Lightning Network is, its parts, and the products in the Builder's Guide.
+- [[lightning-service-providers]]: What LSPs do, custody, wallet channels, fees and capital.
+- [[liquidity]]: On-chain versus channel liquidity, node roles, and opening, rebalancing and closing.
+- [[macaroons]]: Macaroons versus cookies, minting, caveats, delegation and revocation.
+- [[merchant-liquidity]]: Acquiring, maintaining and pushing out inbound liquidity as a merchant.
+- [[multihop-payments]]: A three-hop HTLC example, the payment cycle, and absolute and relative timelocks.
+- [[multipath-payments]]: Why MPP exists, how parts are held and settled, MPP versus AMP.
+- [[pathfinding]]: Payer-chosen onion routes, the graph, cost factors and lnd's routing.
+- [[payment-channels]]: 2-of-2 channels: opening, updating, cooperative and force close.
+- [[routing-nodes]]: Routing-node criteria, capital allocation and choosing peers.
+- [[submarine-swaps]]: The on-chain/off-chain swap in three steps, the Loop contract, and instant swaps.
+- [[sweeping]]: Which funds need sweeping, what each sweep requires, and the lncli sweep commands.
+- [[taproot-assets-on-lightning]]: Asset channels, multi-hop transfers, exchange rates, edge nodes and trustless swaps.
+- [[taproot-assets-protocol]]: Taptweak, sparse Merkle sum trees, issuance, transfers, addresses, proofs and universes.
+- [[watchtowers]]: Channel breaches, the penalty mechanism and how watchtowers work.
 
 ## How-tos
 - [[aperture-mailbox-and-lnc]]: Self-hosting the LNC mailbox and connecting Aperture to lnd over LNC.
