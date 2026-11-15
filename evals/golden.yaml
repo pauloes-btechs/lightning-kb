@@ -1,31 +1,88 @@
-# Golden questions for retrieval. A question passes when a result whose URL
-# or path contains one of the `expect` strings shows up in the top results.
+# Golden questions for retrieval, written as a learner would ask them.
 #
-# This is a starter set of 12. The numbers only mean something once this
-# file holds 40+ questions you actually care about, with the exact page
-# you would want returned. Add one every time search lets you down.
+# They double as a study path: work through the levels in order, asking each
+# question in the chat (./kb serve) and reading the page it lands on.
+#
+#   1  Foundations        what Lightning is and how a payment moves
+#   2  Liquidity          why channels run out of room and how that is fixed
+#   3  The product map    what each Lightning Labs product is for
+#   4  Building a wallet  what an app developer actually touches
+#   5  Running a node     operating lnd safely
+#   6  Exact lookups      specific RPCs and commands
+#
+# A question passes when a result whose path or URL contains one of the
+# `expect` strings appears in the top results. `check` is a phrase the
+# expected page states, used to confirm the question really is answered
+# there (`./kb eval` ignores it). Add a question every time search lets you
+# down, with the page you wanted as `expect`.
 questions:
-  - q: How do I get my node's identity pubkey and alias over the API?
-    expect: [api/lnd/lightning/get-info]
-  - q: Which RPC starts a Loop Out swap?
-    expect: [api/loop/swap-client/loop-out]
-  - q: How do I submit an order in Pool?
-    expect: [api/pool/trader/submit-order]
-  - q: Which call sends a Taproot Asset to an address?
-    expect: [api/taproot-assets/taproot-assets/send-asset]
-  - q: What does the LiT proxy GetInfo call return?
-    expect: [api/lit/proxy/get-info]
-  - q: What is a submarine swap and when would I loop out?
-    expect: [/loop]
-  - q: How does Pool's channel lease marketplace work?
-    expect: [/pool]
-  - q: How are Taproot Assets minted and transferred over Lightning?
-    expect: [taproot-assets]
-  - q: What is L402 and how does Aperture use it?
-    expect: [aperture, l402]
-  - q: What does Faraday report about channel revenue?
-    expect: [faraday]
-  - q: How do I embed a self-custodial Lightning wallet in a React Native app?
-    expect: [raw/wavelength]
-  - q: How do I connect to Lightning Terminal with Lightning Node Connect?
-    expect: [lightning-terminal, /lit]
+  # ---- 1. Foundations ----
+  - {level: 1, q: "What is the Lightning Network and why does Bitcoin need it?", expect: [wiki/concepts/lightning-network-overview], check: "peer-to-peer payment network"}
+  - {level: 1, q: "What is a payment channel?", expect: [wiki/concepts/payment-channels], check: "2-of-2"}
+  - {level: 1, q: "What happens when a channel is closed, and what is a force close?", expect: [wiki/concepts/payment-channels], check: "force close"}
+  - {level: 1, q: "How can I pay someone I don't have a channel with?", expect: [wiki/concepts/multihop-payments], check: "HTLC"}
+  - {level: 1, q: "What is an HTLC and why can't the middle node steal the payment?", expect: [wiki/concepts/htlc], check: "preimage"}
+  - {level: 1, q: "What is inside a Lightning invoice?", expect: [wiki/concepts/lightning-invoices], check: "BOLT 11"}
+  - {level: 1, q: "Who decides which route a payment takes?", expect: [wiki/concepts/pathfinding], check: "onion"}
+  - {level: 1, q: "How do nodes learn about other nodes and channels on the network?", expect: [wiki/concepts/gossip-network], check: "gossip"}
+  - {level: 1, q: "What do routing nodes charge to forward a payment?", expect: [wiki/concepts/channel-fees], check: "base fee"}
+  - {level: 1, q: "What is a watchtower and what does it protect against?", expect: [wiki/concepts/watchtowers], check: "breach"}
+  - {level: 1, q: "Why would a big payment be split into several smaller ones?", expect: [wiki/concepts/multipath-payments], check: "MPP"}
+
+  # ---- 2. Liquidity ----
+  - {level: 2, q: "What is the difference between inbound and outbound liquidity?", expect: [wiki/concepts/liquidity, wiki/concepts/inbound-capacity], check: "inbound"}
+  - {level: 2, q: "I just opened a channel. Why can't anyone pay me yet?", expect: [wiki/concepts/inbound-capacity], check: "inbound capacity"}
+  - {level: 2, q: "How do I get inbound capacity for my node?", expect: [wiki/concepts/inbound-capacity], check: "Loop Out"}
+  - {level: 2, q: "What is a submarine swap?", expect: [wiki/concepts/submarine-swaps], check: "on-chain"}
+  - {level: 2, q: "What is a Lightning service provider and what does it do for a wallet?", expect: [wiki/concepts/lightning-service-providers], check: "LSP"}
+  - {level: 2, q: "How should a merchant keep enough inbound liquidity to receive payments?", expect: [wiki/concepts/merchant-liquidity], check: "merchant"}
+  - {level: 2, q: "What makes a good routing node?", expect: [wiki/concepts/routing-nodes], check: "routing"}
+
+  # ---- 3. The product map ----
+  - {level: 3, q: "What is lnd?", expect: [wiki/components/lnd], check: "lnd"}
+  - {level: 3, q: "What is Loop for, and what is the difference between Loop In and Loop Out?", expect: [wiki/components/loop], check: "Loop In"}
+  - {level: 3, q: "What is Pool and why would someone buy a channel lease?", expect: [wiki/components/pool, wiki/howtos/pool-channel-leases], check: "lease"}
+  - {level: 3, q: "What does Faraday tell a node operator?", expect: [wiki/components/faraday], check: "Faraday"}
+  - {level: 3, q: "What is Lightning Terminal and what does it bundle together?", expect: [wiki/components/lightning-terminal], check: "loopd"}
+  - {level: 3, q: "What is Aperture and what is L402?", expect: [wiki/components/aperture, wiki/concepts/l402], check: "L402"}
+  - {level: 3, q: "What are Taproot Assets?", expect: [wiki/components/taproot-assets, wiki/concepts/taproot-assets-protocol], check: "Taproot Assets"}
+  - {level: 3, q: "How can a stablecoin move over Lightning with Taproot Assets?", expect: [wiki/concepts/taproot-assets-on-lightning], check: "edge node"}
+  - {level: 3, q: "What is Wavelength and what would I not have to run myself?", expect: [wiki/components/wavelength], check: "self-custodial"}
+  - {level: 3, q: "What is Ark and what is a VTXO?", expect: [wiki/concepts/wavelength-concepts], check: "VTXO"}
+  - {level: 3, q: "What is a macaroon and how is it different from a password or API key?", expect: [wiki/concepts/macaroons], check: "caveat"}
+  - {level: 3, q: "What is Lightning Node Connect and why is it used?", expect: [wiki/howtos/lightning-node-connect], check: "pairing phrase"}
+
+  # ---- 4. Building a wallet ----
+  - {level: 4, q: "How do I embed a self-custodial Lightning wallet in a React Native app?", expect: [wiki/howtos/wavelength-react-native-sdk], check: "React Native"}
+  - {level: 4, q: "How do I add a Wavelength wallet to a web app?", expect: [wiki/howtos/wavelength-web-sdk], check: "COOP"}
+  - {level: 4, q: "How does a Wavelength user receive a Lightning payment?", expect: [wiki/howtos/wavelength-wallet-guides], check: "receive"}
+  - {level: 4, q: "How does a user get their money out if the Wavelength operator disappears?", expect: [wiki/howtos/wavelength-unilateral-exit], check: "unilateral"}
+  - {level: 4, q: "How does a user restore their Wavelength wallet on a new phone?", expect: [wiki/howtos/wavelength-wallet-guides, wiki/concepts/wavelength-concepts], check: "restore"}
+  - {level: 4, q: "How do I create an invoice with lnd so someone can pay me?", expect: [wiki/howtos/lnd-receiving-payments], check: "AddInvoice"}
+  - {level: 4, q: "How do I send a payment with lnd and see whether it succeeded?", expect: [wiki/howtos/lnd-sending-payments], check: "SendPaymentV2"}
+  - {level: 4, q: "What is a hold invoice and when would an app use one?", expect: [wiki/services/lnd-invoices], check: "hold"}
+  - {level: 4, q: "How do I give an app limited access to my node instead of full admin access?", expect: [wiki/howtos/lnd-macaroons], check: "bake"}
+  - {level: 4, q: "How do I let other people pay to use my API over Lightning?", expect: [wiki/howtos/running-aperture, wiki/concepts/l402], check: "L402"}
+  - {level: 4, q: "Can I give a user an off-chain account with a spending limit on my node?", expect: [wiki/howtos/litd-accounts-guide, wiki/services/lit-accounts], check: "account"}
+
+  # ---- 5. Running a node ----
+  - {level: 5, q: "How do I install and start lnd for the first time?", expect: [wiki/howtos/running-lnd], check: "lnd"}
+  - {level: 5, q: "What do I need to back up so I don't lose funds?", expect: [wiki/howtos/lnd-recovery], check: "channel.backup"}
+  - {level: 5, q: "How do I run my node over Tor?", expect: [wiki/howtos/lnd-tor-and-networking], check: "Tor"}
+  - {level: 5, q: "How do I set my channel fees in lnd?", expect: [wiki/howtos/lnd-channel-fees], check: "updatechanpolicy"}
+  - {level: 5, q: "My channel close transaction is stuck. How do I bump its fee?", expect: [wiki/howtos/lnd-sweeper], check: "bumpfee"}
+  - {level: 5, q: "How do I set up a watchtower for my node?", expect: [wiki/howtos/lnd-watchtower-setup], check: "wtclient"}
+  - {level: 5, q: "How do I automatically keep my channels balanced with Loop?", expect: [wiki/howtos/autoloop], check: "autoloop"}
+  - {level: 5, q: "How do I open several channels in one on-chain transaction?", expect: [wiki/howtos/lnd-wallet-and-psbt], check: "PSBT"}
+
+  # ---- 6. Exact lookups ----
+  - {level: 6, q: "How do I get my node's identity pubkey and alias over the API?", expect: [api/lnd/lightning/get-info], check: "identity_pubkey"}
+  - {level: 6, q: "Which RPC starts a Loop Out swap?", expect: [api/loop/swap-client/loop-out, wiki/services/loop-swap-client], check: "LoopOut"}
+  - {level: 6, q: "How do I submit an order in Pool?", expect: [api/pool/trader/submit-order, wiki/services/pool-trader], check: "SubmitOrder"}
+  - {level: 6, q: "Which call sends a Taproot Asset to an address?", expect: [api/taproot-assets/taproot-assets/send-asset, wiki/services/tapd-taproot-assets], check: "SendAsset"}
+  - {level: 6, q: "What does the LiT proxy GetInfo call return?", expect: [api/lit/proxy/get-info, wiki/services/lit-proxy], check: "GetInfo"}
+  - {level: 6, q: "Which lnd RPC opens a channel and waits until the funding transaction is broadcast?", expect: [api/lnd/lightning/open-channel-sync], check: "OpenChannelSync"}
+  - {level: 6, q: "Which RPC estimates the fee for paying an invoice before I send it?", expect: [api/lnd/router/estimate-route-fee], check: "EstimateRouteFee"}
+  - {level: 6, q: "Which Faraday call tells me how much each channel has earned?", expect: [api/faraday/faraday-server/channel-insights, wiki/services/faraday-server], check: "fees_earned_msat"}
+  - {level: 6, q: "Which tapd RPC mints a new asset?", expect: [api/taproot-assets/mint/mint-asset, wiki/services/tapd-mint], check: "MintAsset"}
+  - {level: 6, q: "Which Wavelength API route creates a wallet?", expect: [wavelength/api/wallet/create, wiki/howtos/wavelength-api], check: "Create"}
