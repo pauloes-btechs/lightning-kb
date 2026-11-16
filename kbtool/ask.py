@@ -159,8 +159,13 @@ def answer(question, history=None, passages_only=False):
             return _passages_only(conn, question, "The answer took longer than %d seconds and was stopped. "
                                   "These are the best-matching passages." % TIMEOUT)
         except Exception as e:
-            return _passages_only(conn, question, "Claude Code could not produce an answer (%s). These are "
-                                  "the best-matching passages." % str(e)[:200])
+            msg = str(e)
+            hint = ""
+            if any(w in msg.lower() for w in ("authenticat", "oauth", "log in", "login", "401")):
+                hint = (" Claude Code is signed out: run `claude` in a terminal, type /login, "
+                        "then ask again (the chat does not need restarting).")
+            return _passages_only(conn, question, "Claude Code could not produce an answer (%s).%s These are "
+                                  "the best-matching passages." % (msg[:200], hint))
         return verify(conn, result)
 
 
