@@ -11,7 +11,7 @@ import re
 from .common import db, embed, vec_literal
 
 MODES = ("kw", "vec", "hybrid", "graph")
-CAND = 50
+CAND = 150         # passages fetched per retriever before grouping by page
 RRF_K = 60
 # Ranking weights. These are hypotheses, not tuned constants: change one,
 # run ./kb eval, and compare in ./kb history.
@@ -45,7 +45,9 @@ def _or_query(q):
     return " OR ".join(terms) if terms else ""
 
 
-def search(conn, q, mode="graph", k=8, product=None, layer=None):
+def search(conn, q, mode="graph", k=8, product=None, layer=None, per_page=1):
+    """Top k results. per_page caps how many passages one page may contribute,
+    so a long page cannot fill the list; 0 means no cap."""
     scores, sim = {}, {}
     if mode in ("vec", "hybrid", "graph"):
         qv = vec_literal(embed([q], query=True)[0])
@@ -102,7 +104,7 @@ def search(conn, q, mode="graph", k=8, product=None, layer=None):
 
     # Collapse identical chunks: show the best-ranked copy once and list the
     # other pages that contain the same text.
-    out, by_text = [], {}
+    out, by_text, per_doc = [], {}, {}
     for cid, s in sorted(scores.items(), key=lambda kv: -kv[1]):
         doc_id, heading, content, path, lyr, prod, title, url, version = meta[cid]
         if product and prod != product:
@@ -114,19 +116,25 @@ def search(conn, q, mode="graph", k=8, product=None, layer=None):
             if path != dup["path"] and path not in dup["also_in"]:
                 dup["also_in"].append(path)
             continue
+        if per_page and per_doc.get(doc_id, 0) >= per_page:
+            per_doc[doc_id] += 1
+            continue
         if len(out) >= k:
             continue
-        hit = {"id": cid, "score": round(s, 5), "similarity": round(sim[cid], 3) if cid in sim else None,
+        per_doc[doc_id] = per_doc.get(doc_id, 0) + 1
+        hit = {"doc_id": doc_id, "id": cid, "score": round(s, 5), "similarity": round(sim[cid], 3) if cid in sim else None,
                "layer": lyr, "product": prod, "title": title, "heading": heading, "version": version,
                "path": path, "url": url, "content": content, "also_in": []}
         by_text[content] = hit
         out.append(hit)
+    for h in out:
+        h["more_in_page"] = max(0, per_doc.get(h.pop("doc_id"), 1) - (per_page or 1)) if per_page else 0
     return out
 
 
-def run(q, mode, k, product, layer, as_json):
+def run(q, mode, k, product, layer, as_json, per_page=1):
     with db() as conn:
-        hits = search(conn, q, mode, k, product, layer)
+        hits = search(conn, q, mode, k, product, layer, per_page)
     if as_json:
         print(json.dumps(hits, indent=2))
         return

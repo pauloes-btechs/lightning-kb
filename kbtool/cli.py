@@ -19,6 +19,7 @@ def main():
     s.add_argument("--product", help="lnd, loop, pool, faraday, taproot-assets, lit, wavelength, aperture")
     s.add_argument("--layer", choices=["raw", "wiki"])
     s.add_argument("--json", action="store_true")
+    s.add_argument("--per-page", type=int, default=1, help="passages per page (0 = no limit)")
     sub.add_parser("eval", help="phase 5: score all four search modes on evals/golden.yaml")
     sub.add_parser("history", help="past eval runs")
     lint_p = sub.add_parser("lint", help="wiki health: broken links, orphans, missing sources")
@@ -62,7 +63,7 @@ def main():
         index.run()
     elif a.cmd == "search":
         from . import search
-        search.run(a.query, a.mode, a.k, a.product, a.layer, a.json)
+        search.run(a.query, a.mode, a.k, a.product, a.layer, a.json, a.per_page)
     elif a.cmd == "eval":
         from . import quality
         quality.run_eval()

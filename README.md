@@ -12,7 +12,7 @@ graph and a retrieval eval.
 | 1 | Ingest | `./kb crawl` | `raw/` (about 700 markdown pages) |
 | 2 | Wiki | Claude Code: `/build-wiki` | `wiki/` pages with citations |
 | 3 | Index | `./kb index` | chunks, embeddings, link graph |
-| 4 | Retrieve | `./kb search "..."` | ranked chunks with source URLs |
+| 4 | Retrieve | `./kb search "..."` | ranked pages (best passage per page, `--per-page 0` for every passage) with source URLs |
 | 5 | Evaluate | `./kb eval`, `./kb lint` | hit@1, hit@5, MRR per mode; wiki health |
 
 Sources are listed in `sources.yaml`. The agent's rules are in `CLAUDE.md`.

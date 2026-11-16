@@ -27,6 +27,12 @@ SKIP = {"wiki/log.md", "wiki/index.md"}
 SKIP_HEADINGS = tuple(h.strip().lower() for h in os.environ.get(
     "KB_SKIP_SECTIONS", "agent instructions,code samples").split(",") if h.strip())
 TAG_RE = re.compile(r"<[^>]+>")
+# Wiki paragraphs end in citation links to raw files. They are about a fifth
+# of the wiki's text and are file paths, not meaning, so they are removed from
+# what gets indexed (the pages themselves keep them). Bump WIKI_CLEAN to
+# re-embed wiki pages only.
+CITE_RE = re.compile(r"\s*\(\[source\]\([^)]*\)\)|\s*\[source\]\([^)]*\)")
+WIKI_CLEAN = "1"
 # Bump when chunking or embedding-input rules change: every file is redone.
 CHUNK_VERSION = "4|" + ",".join(SKIP_HEADINGS)
 API_RE = re.compile(r"^raw/api/api-docs/api/([^/]+)/([^/]+)/([^/]+)\.md$")
@@ -158,9 +164,11 @@ def run(url=None):
         for layer, rel, f in _files():
             raw_text = f.read_text(errors="replace")
             meta, body = split_frontmatter(raw_text)
-            digest = sha(CHUNK_VERSION + raw_text)
+            texts[rel] = (meta, body)          # the link graph reads the full page
+            if layer == "wiki":
+                body = CITE_RE.sub("", body)
+            digest = sha(CHUNK_VERSION + (WIKI_CLEAN if layer == "wiki" else "") + raw_text)
             seen[rel] = True
-            texts[rel] = (meta, body)
             if existing.get(rel) != digest:
                 todo.append((layer, rel, f, meta, body, digest))
         if todo:

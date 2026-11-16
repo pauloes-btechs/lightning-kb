@@ -26,16 +26,20 @@ def run_eval(show_misses=True):
     best = None
     with db() as conn:
         for mode in MODES:
-            ranks = []
+            ranks, tops = [], []
             for item in golden:
-                # Look 50 deep so a miss reports where the page actually ranked.
-                ranks.append(_first_hit(search(conn, item["q"], mode, 50), item["expect"]))
+                # Ranks count distinct pages. Look 50 deep so a miss reports
+                # where the page actually ranked, and keep the top 3 to show.
+                hits = search(conn, item["q"], mode, 50)
+                ranks.append(_first_hit(hits, item["expect"]))
+                tops.append([h["path"] for h in hits[:3]])
             n = float(len(ranks))
             h1 = sum(1 for r in ranks if r == 1) / n
             h5 = sum(1 for r in ranks if r and r <= 5) / n
             mrr = sum(1.0 / r for r in ranks if r and r <= 10) / n
             print("%-8s %7.2f %7.2f %7.2f" % (mode, h1, h5, mrr))
-            detail = [{"q": g["q"], "rank": r} for g, r in zip(golden, ranks)]
+            detail = [{"q": g["q"], "rank": r, "level": g.get("level"), "top": t}
+                      for g, r, t in zip(golden, ranks, tops)]
             conn.execute(
                 "insert into eval_runs(mode, embed_model, questions, hit_at_1, hit_at_5, mrr, detail) "
                 "values (%s,%s,%s,%s,%s,%s,%s)",
@@ -48,6 +52,15 @@ def run_eval(show_misses=True):
         for d in misses:
             where = "expected page ranked %d" % d["rank"] if d["rank"] else "expected page not in the top 50"
             print("  - %s (%s)" % (d["q"], where))
+            for path in d["top"]:
+                print("      ranked above: " + path)
+        levels = sorted(set(d["level"] for d in best[2] if d["level"] is not None))
+        if levels:
+            print("\nBy level (%s mode), share answered in the top 5:" % best[0])
+            for lv in levels:
+                ds = [d for d in best[2] if d["level"] == lv]
+                ok = sum(1 for d in ds if d["rank"] and d["rank"] <= 5)
+                print("  level %s: %d of %d" % (lv, ok, len(ds)))
     print("\nSaved to eval_runs. Compare over time: ./kb history")
 
 
