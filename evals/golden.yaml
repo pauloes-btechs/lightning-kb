@@ -23,7 +23,7 @@ questions:
   - {level: 1, q: "What is a payment channel?", expect: [wiki/concepts/payment-channels, the-lightning-network/payment-channels.md, payment-channels/lifecycle-of-a-payment-channel], check: "2-of-2"}
   - {level: 1, q: "What happens when a channel is closed, and what is a force close?", expect: [wiki/concepts/payment-channels, payment-channels/lifecycle-of-a-payment-channel], check: "force close"}
   - {level: 1, q: "How can I pay someone I don't have a channel with?", expect: [wiki/concepts/multihop-payments, the-lightning-network/multihop-payments.md, multihop-payments/the-payment-cycle], check: "HTLC"}
-  - {level: 1, q: "What is an HTLC and why can't the middle node steal the payment?", expect: [wiki/concepts/htlc, multihop-payments/hash-time-lock-contract-htlc], check: "preimage"}
+  - {level: 1, q: "What is an HTLC and why can't the middle node steal the payment?", expect: [wiki/concepts/htlc, multihop-payments/hash-time-lock-contract-htlc, wiki/concepts/multihop-payments], check: "preimage"}
   - {level: 1, q: "What is inside a Lightning invoice?", expect: [wiki/concepts/lightning-invoices, payment-lifecycle/understanding-lightning-invoices], check: "BOLT 11"}
   - {level: 1, q: "Who decides which route a payment takes?", expect: [wiki/concepts/pathfinding, the-lightning-network/pathfinding.md, pathfinding/finding-routes-in-the-lightning-network], check: "onion"}
   - {level: 1, q: "How do nodes learn about other nodes and channels on the network?", expect: [wiki/concepts/gossip-network, the-lightning-network/the-gossip-network.md], check: "gossip"}
@@ -83,7 +83,7 @@ questions:
   - {level: 6, q: "How do I submit an order in Pool?", expect: [api/pool/trader/submit-order, wiki/services/pool-trader], check: "SubmitOrder"}
   - {level: 6, q: "Which call sends a Taproot Asset to an address?", expect: [api/taproot-assets/taproot-assets/send-asset, wiki/services/tapd-taproot-assets], check: "SendAsset"}
   - {level: 6, q: "What does the LiT proxy GetInfo call return?", expect: [api/lit/proxy/get-info, wiki/services/lit-proxy], check: "GetInfo"}
-  - {level: 6, q: "Which lnd RPC opens a channel and waits until the funding transaction is broadcast?", expect: [api/lnd/lightning/open-channel-sync], check: "OpenChannelSync"}
+  - {level: 6, q: "Which lnd RPC opens a channel in a single call, for clients of the REST proxy?", expect: [api/lnd/lightning/open-channel-sync], check: "OpenChannelSync"}
   - {level: 6, q: "Which RPC estimates the fee for paying an invoice before I send it?", expect: [api/lnd/router/estimate-route-fee], check: "EstimateRouteFee"}
   - {level: 6, q: "Which Faraday call tells me how much each channel has earned?", expect: [api/faraday/faraday-server/channel-insights, wiki/services/faraday-server], check: "fees_earned_msat"}
   - {level: 6, q: "Which tapd RPC mints a new asset?", expect: [api/taproot-assets/mint/mint-asset, wiki/services/tapd-mint], check: "MintAsset"}

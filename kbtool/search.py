@@ -33,6 +33,13 @@ PRODUCT_ALIASES = {
     "aperture": ["aperture"],
     "wavelength": ["wavelength", "wavecli"],
 }
+# A question that asks for an RPC ("which call sends...") gets a third ranking:
+# API reference pages only, ranked by their description passage (the one
+# before the gRPC, message and enum sections), limited to the products the
+# question names. Guides describe the task in the question's words and would
+# otherwise outrank the reference page that names the call.
+RPC_INTENT = re.compile(r"\b(rpcs?|calls?|endpoints?|methods?|api|grpc)\b", re.I)
+W_API = 1.0
 
 
 def products_named(q):
@@ -45,10 +52,35 @@ def _or_query(q):
     return " OR ".join(terms) if terms else ""
 
 
+def _api_ranking(conn, q, qv, scores, sim):
+    """Rank RPC reference pages by their best passage and fuse that ranking in."""
+    named = products_named(q) or None
+    if qv is not None:
+        rows = conn.execute(
+            "select id, d from (select c.id, c.embedding <=> %s::vector d "
+            "  from chunks c join entities e on e.doc_id = c.doc_id and e.kind = 'rpc' "
+            "  where position(' > ' in c.heading) = 0 and (%s::text[] is null or e.product = any(%s)) "
+            ") s order by d limit 50", (qv, named, named)).fetchall()
+        for rank, (cid, d) in enumerate(rows, 1):
+            scores[cid] = scores.get(cid, 0.0) + W_API / (RRF_K + rank)
+            sim.setdefault(cid, 1 - float(d))
+    elif _or_query(q):
+        rows = conn.execute(
+            "select id from (select c.id, ts_rank_cd(c.tsv, t) r "
+            "  from chunks c join entities e on e.doc_id = c.doc_id and e.kind = 'rpc', "
+            "       websearch_to_tsquery('english', %s) t "
+            "  where c.tsv @@ t and position(' > ' in c.heading) = 0 and (%s::text[] is null or e.product = any(%s)) "
+            ") s order by r desc limit 50",
+            (_or_query(q), named, named)).fetchall()
+        for rank, (cid,) in enumerate(rows, 1):
+            scores[cid] = scores.get(cid, 0.0) + W_API / (RRF_K + rank)
+
+
 def search(conn, q, mode="graph", k=8, product=None, layer=None, per_page=1):
     """Top k results. per_page caps how many passages one page may contribute,
     so a long page cannot fill the list; 0 means no cap."""
     scores, sim = {}, {}
+    qv = None
     if mode in ("vec", "hybrid", "graph"):
         qv = vec_literal(embed([q], query=True)[0])
         rows = conn.execute(
@@ -65,6 +97,8 @@ def search(conn, q, mode="graph", k=8, product=None, layer=None, per_page=1):
         w = 1.0 if mode == "kw" else W_KW
         for rank, (cid,) in enumerate(rows, 1):
             scores[cid] = scores.get(cid, 0.0) + w / (RRF_K + rank)
+    if RPC_INTENT.search(q):
+        _api_ranking(conn, q, qv, scores, sim)
     if not scores:
         return []
 
